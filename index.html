@@ -409,7 +409,7 @@ body{
       <button id="fpBtn" onclick="loginWithFingerprint()" style="display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px; background: rgba(0, 154, 147, 0.15); border: 1.5px solid rgba(0, 154, 147, 0.3); color: var(--teal); font-size: 14px; cursor: pointer;">🫆 Mit Fingerabdruck anmelden</button>
     </div>
     <div id="maLogin" style="display:none">
-      <select class="lf" id="maSelect"><option value="">Mitarbeiter auswählen...</option><option value="1">Lewis Vieth · Mölln</option><option value="2">Janne-Marie Hinrichs · Schwarzenbek</option><option value="3">Katharina Rogosch · Lübeck</option><option value="4">Katja Schnakenbek · Schwarzenbek</option><option value="5">Rita Fritz · </option><option value="6">Katja Krause · Ratzeburg</option><option value="7">Alexander Kohls · Lübeck</option><option value="8">Till Städing · Mölln</option><option value="9">Susanne Michelau · Mölln</option><option value="10">Tony Hazeem · Mölln</option><option value="11">Inga Krohn · Lübeck</option><option value="12">Alina Patin · Lübeck</option><option value="13">Annemay Küsel · Lübeck</option><option value="14">Robin Jedtberg · Lübeck</option><option value="15">Marcel Joppeck · Lübeck</option><option value="16">Maja Oberst · Lübeck</option><option value="17">Lea Schewski · Lübeck</option><option value="18">Myriam Brauner · Mölln</option><option value="19">Moritz Bruns · Mölln</option><option value="20">Wenke Siewert · Mölln</option><option value="21">Katrin Meßfeldt · Mölln</option><option value="22">Kathleen Kretzschmar · Mölln</option><option value="23">Oliver Bebensee · Mölln</option><option value="24">Jean-Michel Blechschmidt · Mölln</option><option value="25">Tim Arthur Ohldag · Mölln</option><option value="26">Morison Mateta-Lufua · Schwarzenbek</option></select>
+      <select class="lf" id="maSelect"><option value="">Mitarbeiter auswählen...</option><option value="1">Lewis Vieth · Mölln</option><option value="2">Janne-Marie Hinrichs · Schwarzenbek</option><option value="3">Katharina Rogosch · Lübeck</option><option value="4">Katja Schnakenbek · Schwarzenbek</option><option value="5">Rita Fritz · Mölln</option><option value="6">Katja Krause · Mölln</option><option value="7">Alexander Kohls · Lübeck</option><option value="8">Till Städing · Mölln</option><option value="9">Susanne Michelau · Mölln</option><option value="10">Tony Hazeem · Mölln</option><option value="11">Inga Krohn · Lübeck</option><option value="12">Alina Patin · Lübeck</option><option value="13">Annemay Küsel · Lübeck</option><option value="14">Robin Jedtberg · Lübeck</option><option value="15">Marcel Joppeck · Lübeck</option><option value="16">Maja Oberst · Lübeck</option><option value="17">Lea Schewski · Lübeck</option><option value="18">Myriam Brauner · Mölln</option><option value="19">Moritz Bruns · Mölln</option><option value="20">Wenke Siewert · Mölln</option><option value="21">Katrin Meßfeldt · Mölln</option><option value="22">Kathleen Kretzschmar · Mölln</option><option value="23">Oliver Bebensee · Mölln</option><option value="24">Jean-Michel Blechschmidt · Mölln</option><option value="25">Tim Arthur Ohldag · Mölln</option><option value="26">Morison Mateta-Lufua · Schwarzenbek</option></select>
       <div class="pin-label">PIN eingeben</div>
       <div class="pin-dots" id="pinDots">
         <div class="pin-dot"></div><div class="pin-dot"></div>
@@ -438,7 +438,7 @@ body{
     <div class="hdr-right">
       <button class="notif-btn" onclick="toggleNotif()">🔔<span id="chefNotifDot" class="notif-dot" style=""></span></button>
       <div class="dm-toggle" onclick="toggleDark()" title="Dunkelmodus" style="margin:0 6px">
-        <div class="dm-track on" id="dmTrack"><div class="dm-thumb"></div></div>
+        <div class="dm-track" id="dmTrack"><div class="dm-thumb"></div></div>
       </div>
       <button class="notif-btn" onclick="openPwChange()" title="Passwort ändern">🔑</button>
       <button class="logout-btn" onclick="logout()">Abmelden</button>
@@ -2839,7 +2839,7 @@ if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone){
 
 
 <!-- ELITE TOAST CONTAINER -->
-<div id="toastContainer"><div class="toast info show">Lade hoch...</div><div class="toast info">Lade hoch...</div></div>
+<div id="toastContainer"><div class="toast info show">Lade hoch...</div><div class="toast info">Lade hoch...</div><div class="toast info show">Lade hoch...</div></div>
 
 <!-- ELITE CONFIRM MODAL -->
 <div id="confirmModal">
