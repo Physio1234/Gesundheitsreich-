@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gesundheitsreich Elite v1</title>
+  <style>
+    :root{
+      --bg:#071314;
+      --panel:#0d2020;
+      --panel-2:#102828;
+      --card:#132f2f;
+      --soft:#1d3d3d;
+      --teal:#1fd1c8;
+      --teal-2:#11b7af;
+      --text:#eef8f7;
+      --muted:#9bc2be;
+      --good:#3fd37a;
+      --warn:#ffb020;
+      --bad:#ff6b6b;
+      --border:rgba(255,255,255,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#061011,#0d1919 28%,#eaf2f1 28%,#edf4f3 100%);color:var(--text);font-family:Inter,Arial,sans-serif}
+    body{min-height:100vh}
+    .app{max-width:1180px;margin:0 auto;padding:0 16px 28px}
+    .hero{
+      background:radial-gradient(circle at top right, rgba(31,209,200,.18), transparent 28%), linear-gradient(135deg,#071314,#0e2020 54%,#0a1717);
+      border:1px solid var(--border);
+      border-radius:0 0 28px 28px;
+      padding:18px 18px 22px;
+      box-shadow:var(--shadow);
+      position:sticky; top:0; z-index:10; backdrop-filter:blur(8px);
+    }
+    .hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-badge{
+      width:52px;height:52px;border-radius:16px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#153333,#0d2323);
+      border:1px solid var(--border); color:var(--teal); font-size:24px;
+    }
+    .brand h1{margin:0;font-size:24px;letter-spacing:.2px}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .header-controls{display:flex;gap:10px;flex-wrap:wrap}
+    .select, .input, .btn{
+      border-radius:18px;border:1px solid var(--border);outline:none;
+      background:rgba(255,255,255,.03);color:var(--text)
+    }
+    .select, .input{padding:14px 16px;font-size:15px}
+    .btn{
+      padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;
+      transition:transform .15s ease, filter .15s ease, background .15s ease
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#042020;border:none}
+    .btn-ghost{background:rgba(255,255,255,.04)}
+    .hero-kpis{
+      margin-top:16px;
+      display:grid;grid-template-columns:repeat(4,1fr);gap:12px
+    }
+    .hero-kpi{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:22px;padding:16px
+    }
+    .hero-kpi .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+    .hero-kpi .value{margin-top:8px;font-size:34px;font-weight:800}
+    .hero-kpi .sub{margin-top:6px;color:var(--muted);font-size:13px}
+
+    .section{
+      margin-top:18px;background:rgba(255,255,255,.6);border:1px solid rgba(12,31,31,.06);
+      border-radius:30px;overflow:hidden;box-shadow:0 8px 25px rgba(4,18,18,.06)
+    }
+    .section-head{
+      background:linear-gradient(135deg,#081414,#102626);
+      color:white;padding:18px 20px;font-size:15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase
+    }
+    .section-body{padding:20px}
+    .grid-2{display:grid;grid-template-columns:1.2fr .9fr;gap:18px}
+    .left-col,.right-col{display:flex;flex-direction:column;gap:18px}
+
+    .card{
+      background:linear-gradient(180deg,#0d2020,#112929);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:28px;padding:18px;box-shadow:var(--shadow)
+    }
+    .card.light{
+      background:linear-gradient(180deg,#f7fbfb,#eef5f4);
+      color:#102525;border:1px solid rgba(6,20,20,.08);box-shadow:none
+    }
+    .card h3{margin:0 0 14px;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+    .employee-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .employee-name{font-size:34px;font-weight:900;line-height:1}
+    .employee-meta{margin-top:8px;color:var(--muted)}
+    .target-ring{
+      width:90px;height:90px;border-radius:50%;
+      border:6px solid rgba(255,255,255,.12);display:grid;place-items:center;
+      font-weight:900;color:#ff7f7f;flex:0 0 auto
+    }
+    .summary-row{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .mini{
+      border-radius:22px;padding:16px;background:rgba(255,255,255,.04);border:1px solid var(--border)
+    }
+    .mini .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+    .mini .value{margin-top:8px;font-size:24px;font-weight:900}
+    .progress{
+      height:14px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden
+    }
+    .progress > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--warn),var(--teal));width:0%}
+    .note{
+      margin-top:14px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);color:var(--muted)
+    }
+
+    .calculator-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .mode-switch{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{
+      padding:10px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+      cursor:pointer;font-weight:700;color:var(--text)
+    }
+    .chip.active{background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#082020;border:none}
+    .slider-wrap{margin-top:18px}
+    input[type=range]{width:100%;accent-color:var(--teal)}
+    .range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:6px}
+    .result-grid{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .result-box{
+      padding:18px;border-radius:24px;background:rgba(255,255,255,.04);border:1px solid var(--border)
+    }
+    .result-box .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+    .result-box .value{margin-top:10px;font-size:44px;font-weight:900;line-height:1}
+    .result-box.primary{background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#082020;border:none}
+    .result-box.primary .label{color:#083535}
+    .formula{margin-top:14px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);color:var(--muted);font-size:15px}
+    .subcards{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .subcard{
+      border-radius:22px;padding:16px;background:#f5fbfa;border:1px solid rgba(7,22,22,.08);color:#102525
+    }
+    .subcard .big{font-size:30px;font-weight:900}
+    .subcard.good{border-left:5px solid var(--good)}
+    .subcard.warn{border-left:5px solid var(--warn)}
+    .subcard.bad{border-left:5px solid var(--bad)}
+
+    .list{display:flex;flex-direction:column;gap:12px}
+    .row-card{
+      display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+      padding:16px;border-radius:22px;background:#f7fbfb;border:1px solid rgba(6,20,20,.08)
+    }
+    .avatar{
+      width:58px;height:58px;border-radius:18px;display:grid;place-items:center;
+      background:linear-gradient(135deg,#1fd1c8,#11b7af);color:#082020;font-weight:900;font-size:22px
+    }
+    .row-main .name{font-size:24px;font-weight:900;color:#102525}
+    .row-main .meta{margin-top:4px;color:#587a76}
+    .row-main .smallbar{margin-top:10px;height:10px;border-radius:999px;background:#d7e7e5;overflow:hidden}
+    .row-main .smallbar span{display:block;height:100%;background:linear-gradient(90deg,var(--warn),var(--teal));width:0%}
+    .row-side{text-align:right}
+    .row-side .big{font-size:28px;font-weight:900;color:#102525}
+    .row-side .pct{font-size:14px;font-weight:800}
+
+    .insights{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .insight{
+      padding:16px;border-radius:24px;background:#f7fbfb;border:1px solid rgba(6,20,20,.08)
+    }
+    .insight .title{font-size:12px;color:#6d8f8b;letter-spacing:.12em;text-transform:uppercase}
+    .insight .val{margin-top:8px;font-size:28px;font-weight:900;color:#102525}
+    .insight .text{margin-top:6px;color:#5a7d79}
+    .footer-note{
+      margin-top:12px;color:#6d8f8b;font-size:13px
+    }
+
+    @media (max-width: 980px){
+      .hero-kpis{grid-template-columns:repeat(2,1fr)}
+      .grid-2{grid-template-columns:1fr}
+      .summary-row,.result-grid,.subcards,.insights{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 640px){
+      .hero-kpis,.summary-row,.result-grid,.subcards,.insights{grid-template-columns:1fr}
+      .employee-head{flex-direction:column}
+      .target-ring{width:78px;height:78px}
+      .employee-name{font-size:30px}
+      .row-card{grid-template-columns:1fr}
+      .row-side{text-align:left}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="brand-badge">⚡</div>
+          <div>
+            <h1>Gesundheitsreich Elite v1</h1>
+            <p>Neue Clean-Architektur · Ein Rechenkern · skalierbar für mehrere Standorte</p>
+          </div>
+        </div>
+        <div class="header-controls">
+          <select id="locationSelect" class="select"></select>
+          <select id="employeeSelect" class="select"></select>
+          <button id="resetBtn" class="btn btn-ghost">Zurücksetzen</button>
+        </div>
+      </div>
+
+      <div class="hero-kpis">
+        <div class="hero-kpi">
+          <div class="label">Aktive Mitarbeiter</div>
+          <div class="value" id="kpiEmployees">0</div>
+          <div class="sub">am ausgewählten Standort</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="label">Standorte</div>
+          <div class="value" id="kpiLocations">0</div>
+          <div class="sub">in der Elite-Version vorbereitet</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="label">Umsatz-Leak</div>
+          <div class="value" id="kpiLeak">0 €</div>
+          <div class="sub">Potenzial bis 100% Ziel</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="label">Monats-Prognose +1h</div>
+          <div class="value" id="kpiForecast">0 €</div>
+          <div class="sub">zusätzlicher Standort-Umsatz</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">Elite-Rechner</div>
+      <div class="section-body grid-2">
+        <div class="left-col">
+          <div class="card" id="employeeCard">
+            <div class="employee-head">
+              <div>
+                <div class="employee-name" id="empName">–</div>
+                <div class="employee-meta" id="empMeta">–</div>
+              </div>
+              <div class="target-ring">
+                <div style="text-align:center">
+                  <div id="empTargetPct" style="font-size:24px">0%</div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:2px">Ziel</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <div class="mini">
+                <div class="label">Stunden</div>
+                <div class="value" id="miniHours">0h</div>
+              </div>
+              <div class="mini">
+                <div class="label">Gehalt</div>
+                <div class="value" id="miniSalary">0 €</div>
+              </div>
+              <div class="mini">
+                <div class="label">Ziel</div>
+                <div class="value" id="miniTarget">0 €</div>
+              </div>
+              <div class="mini">
+                <div class="label">Provision</div>
+                <div class="value" id="miniProvRate">0%</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px">
+              <div class="progress"><span id="targetBar"></span></div>
+            </div>
+
+            <div class="note" id="employeeNote">–</div>
+          </div>
+
+          <div class="card" id="calculatorCard">
+            <div class="calculator-top">
+              <h3 style="margin:0">Einheitlicher Elite-Rechner</h3>
+              <div class="mode-switch">
+                <button class="chip active" data-mode="hours">Stunden erhöhen</button>
+                <button class="chip" data-mode="revenue">Umsatz simulieren</button>
+              </div>
+            </div>
+
+            <div class="slider-wrap">
+              <div id="sliderTitle" style="font-size:20px;font-weight:800">+0h / Woche</div>
+              <input id="mainSlider" type="range" min="0" max="8" step="0.5" value="0" />
+              <div class="range-labels" id="sliderLabels">
+                <span>0h</span><span>4h</span><span>8h</span>
+              </div>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-box">
+                <div class="label">Umsatz</div>
+                <div class="value" id="resRevenue">0 €</div>
+              </div>
+              <div class="result-box">
+                <div class="label">Provision</div>
+                <div class="value" id="resProv">0 €</div>
+              </div>
+              <div class="result-box primary">
+                <div class="label">Gesamt</div>
+                <div class="value" id="resTotal">0 €</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px">
+              <div class="progress"><span id="calcBar"></span></div>
+            </div>
+
+            <div class="formula" id="formulaBox">–</div>
+
+            <div class="subcards">
+              <div class="subcard good">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#597a76">Noch bis Ziel</div>
+                <div class="big" id="subDiff">0 €</div>
+              </div>
+              <div class="subcard warn">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#597a76">Slot-Wert</div>
+                <div class="big" id="subSlotValue">0 €</div>
+              </div>
+              <div class="subcard bad">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#597a76">Neue Stunden</div>
+                <div class="big" id="subHours">0h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="card light">
+            <h3 style="color:#173232">Chef-Insights</h3>
+            <div class="insights">
+              <div class="insight">
+                <div class="title">Top Performer</div>
+                <div class="val" id="insTopName">–</div>
+                <div class="text" id="insTopText">–</div>
+              </div>
+              <div class="insight">
+                <div class="title">Größtes Potenzial</div>
+                <div class="val" id="insLeakName">–</div>
+                <div class="text" id="insLeakText">–</div>
+              </div>
+              <div class="insight">
+                <div class="title">+1h Forecast</div>
+                <div class="val" id="insForecast">0 €</div>
+                <div class="text">zusätzlicher Umsatz pro Monat</div>
+              </div>
+              <div class="insight">
+                <div class="title">Standort-Umsatz Ziel</div>
+                <div class="val" id="insTargetSum">0 €</div>
+                <div class="text">Summe aller Mitarbeiter-Ziele</div>
+              </div>
+            </div>
+            <div class="footer-note">Diese Clean-Version ist bewusst neu aufgebaut: ein Rechenkern, klare Modi, keine widersprüchlichen Doppel-Rechner.</div>
+          </div>
+
+          <div class="card light">
+            <h3 style="color:#173232">Standort-Team</h3>
+            <div class="list" id="teamList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      mode: "hours",
+      selectedLocation: "Lübeck",
+      selectedEmployeeId: "alex",
+      sliderValue: 0
+    };
+
+    const cfg = {
+      workdays: 21,
+      slotsPerDay40: 24,
+      defaultProvRate: 30
+    };
+
+    const employees = [
+      {id:"alex", location:"Lübeck", name:"Alexander Kohls", role:"Berufsanfänger", hours:40, salary:3300, target:9100, provRate:30, currentRevenue:6800},
+      {id:"inga", location:"Lübeck", name:"Inga Krohn", role:"Junior", hours:32, salary:3400, target:7800, provRate:30, currentRevenue:7200},
+      {id:"alina", location:"Lübeck", name:"Alina Patin", role:"Junior", hours:35, salary:3650, target:8600, provRate:30, currentRevenue:7900},
+      {id:"annemai", location:"Lübeck", name:"Annemay Küsel", role:"Berufsanfänger", hours:35, salary:3400, target:8400, provRate:30, currentRevenue:7100},
+      {id:"marcel", location:"Lübeck", name:"Marcel Joppeck", role:"Junior", hours:40, salary:3600, target:13000, provRate:30, currentRevenue:10000},
+      {id:"maja", location:"Lübeck", name:"Maja Oberst", role:"Berufsanfänger", hours:35, salary:3000, target:11400, provRate:30, currentRevenue:0},
+      {id:"lea", location:"Lübeck", name:"Lea Schewski", role:"Berufsanfänger", hours:40, salary:3940, target:13000, provRate:30, currentRevenue:0},
+
+      {id:"katja", location:"Mölln", name:"Katja Krause", role:"Junior", hours:35, salary:3450, target:8000, provRate:30, currentRevenue:6800},
+      {id:"lewis", location:"Mölln", name:"Lewis Vieth", role:"Berufsanfänger", hours:33, salary:2640, target:7500, provRate:30, currentRevenue:0},
+      {id:"rita", location:"Mölln", name:"Rita Fritz", role:"Berufsanfänger", hours:37, salary:3100, target:8400, provRate:30, currentRevenue:0},
+      {id:"till", location:"Mölln", name:"Till Städing", role:"Berufsanfänger", hours:40, salary:3300, target:9100, provRate:30, currentRevenue:0},
+
+      {id:"sb1", location:"Schwarzenbek", name:"Tony Hazeem", role:"Senior", hours:40, salary:4200, target:12000, provRate:30, currentRevenue:10200},
+      {id:"sb2", location:"Schwarzenbek", name:"Moritz Bruns", role:"Junior", hours:40, salary:4000, target:11000, provRate:30, currentRevenue:9800},
+      {id:"sb3", location:"Schwarzenbek", name:"Katrin Meßfeldt", role:"Senior", hours:35, salary:4200, target:9800, provRate:30, currentRevenue:9200},
+
+      {id:"mr1", location:"Marktredwitz", name:"Startposition A", role:"Neu", hours:40, salary:3300, target:9100, provRate:30, currentRevenue:0},
+      {id:"mr2", location:"Marktredwitz", name:"Startposition B", role:"Neu", hours:35, salary:3000, target:8000, provRate:30, currentRevenue:0}
+    ];
+
+    const eur = (n) => new Intl.NumberFormat("de-DE", {style:"currency", currency:"EUR", maximumFractionDigits:0}).format(Math.round(n || 0));
+    const pct = (n) => `${Math.max(0, Math.min(100, Math.round(n || 0)))}%`;
+
+    function getLocations(){
+      return [...new Set(employees.map(e => e.location))];
+    }
+
+    function byLocation(location){
+      return employees.filter(e => e.location === location);
+    }
+
+    function currentEmployee(){
+      return employees.find(e => e.id === state.selectedEmployeeId) || byLocation(state.selectedLocation)[0];
+    }
+
+    function monthlySlots(hours){
+      return cfg.workdays * cfg.slotsPerDay40 * (hours / 40);
+    }
+
+    function slotValue(emp){
+      const slots = monthlySlots(emp.hours);
+      return slots > 0 ? emp.target / slots : 0;
+    }
+
+    function revenueFromExtraHours(emp, extraHours){
+      const newHours = emp.hours + extraHours;
+      const slots = monthlySlots(newHours);
+      return Math.round(slotValue(emp) * slots);
+    }
+
+    function calcScenario(emp, mode, sliderValue){
+      let revenue = 0;
+      let newHours = emp.hours;
+
+      if(mode === "hours"){
+        const extraHours = Number(sliderValue || 0);
+        newHours = emp.hours + extraHours;
+        revenue = revenueFromExtraHours(emp, extraHours);
+      } else {
+        revenue = Number(sliderValue || 0);
+      }
+
+      const diff = revenue - emp.target;
+      const provision = Math.max(0, Math.round(diff * (emp.provRate / 100)));
+      const total = emp.salary + provision;
+      const targetPct = emp.target > 0 ? (revenue / emp.target) * 100 : 0;
+
+      return {
+        revenue,
+        provision,
+        total,
+        diff,
+        targetPct,
+        newHours
+      };
+    }
+
+    function updateSelects(){
+      const locationSelect = document.getElementById("locationSelect");
+      const employeeSelect = document.getElementById("employeeSelect");
+
+      locationSelect.innerHTML = getLocations().map(l => `<option ${l===state.selectedLocation?'selected':''}>${l}</option>`).join("");
+
+      const locEmployees = byLocation(state.selectedLocation);
+      if(!locEmployees.find(e => e.id === state.selectedEmployeeId)){
+        state.selectedEmployeeId = locEmployees[0]?.id || "";
+      }
+
+      employeeSelect.innerHTML = locEmployees.map(e => `<option value="${e.id}" ${e.id===state.selectedEmployeeId?'selected':''}>${e.name}</option>`).join("");
+    }
+
+    function updateHeroKPIs(){
+      const locEmployees = byLocation(state.selectedLocation);
+      document.getElementById("kpiEmployees").textContent = locEmployees.length;
+      document.getElementById("kpiLocations").textContent = getLocations().length;
+
+      const leak = locEmployees.reduce((sum, e) => sum + Math.max(0, e.target - e.currentRevenue), 0);
+      document.getElementById("kpiLeak").textContent = eur(leak);
+
+      const forecast = locEmployees.reduce((sum, e) => {
+        return sum + Math.max(0, revenueFromExtraHours(e, 1) - revenueFromExtraHours(e, 0));
+      }, 0);
+      document.getElementById("kpiForecast").textContent = eur(forecast);
+    }
+
+    function updateEmployeeCard(emp){
+      document.getElementById("empName").textContent = emp.name;
+      document.getElementById("empMeta").textContent = `${emp.location} · ${emp.role}`;
+      document.getElementById("miniHours").textContent = `${emp.hours}h`;
+      document.getElementById("miniSalary").textContent = eur(emp.salary);
+      document.getElementById("miniTarget").textContent = eur(emp.target);
+      document.getElementById("miniProvRate").textContent = `${emp.provRate}%`;
+
+      const currentPct = emp.target > 0 ? (emp.currentRevenue / emp.target) * 100 : 0;
+      document.getElementById("empTargetPct").textContent = pct(currentPct);
+      document.getElementById("targetBar").style.width = `${Math.min(100,currentPct)}%`;
+
+      let note = "";
+      if(emp.currentRevenue <= 0){
+        note = `Aktuell kein eingetragener Umsatz. Ziel liegt bei ${eur(emp.target)}.`;
+      } else if(emp.currentRevenue >= emp.target){
+        note = `Ziel erreicht. Aktueller Umsatz ${eur(emp.currentRevenue)}.`;
+      } else {
+        note = `Aktueller Umsatz ${eur(emp.currentRevenue)}. Es fehlen noch ${eur(emp.target - emp.currentRevenue)} bis zum Ziel.`;
+      }
+      document.getElementById("employeeNote").textContent = note;
+    }
+
+    function configureSlider(emp){
+      const slider = document.getElementById("mainSlider");
+      const labels = document.getElementById("sliderLabels");
+      const title = document.getElementById("sliderTitle");
+
+      if(state.mode === "hours"){
+        slider.min = 0;
+        slider.max = 8;
+        slider.step = 0.5;
+        if(state.sliderValue > 8) state.sliderValue = 0;
+        slider.value = state.sliderValue;
+        labels.innerHTML = `<span>0h</span><span>4h</span><span>8h</span>`;
+        title.textContent = `+${Number(state.sliderValue).toFixed(Number(state.sliderValue)%1===0?0:1)}h / Woche`;
+      } else {
+        slider.min = 0;
+        slider.max = 20000;
+        slider.step = 50;
+        if(state.sliderValue > 20000) state.sliderValue = emp.currentRevenue || emp.target;
+        slider.value = state.sliderValue;
+        labels.innerHTML = `<span>0 €</span><span>${eur(emp.target)}</span><span>20.000 €</span>`;
+        title.textContent = `Monatsumsatz: ${eur(state.sliderValue)}`;
+      }
+    }
+
+    function updateCalculator(emp){
+      const result = calcScenario(emp, state.mode, state.sliderValue);
+
+      document.getElementById("resRevenue").textContent = eur(result.revenue);
+      document.getElementById("resProv").textContent = eur(result.provision);
+      document.getElementById("resTotal").textContent = eur(result.total);
+      document.getElementById("calcBar").style.width = `${Math.min(100,result.targetPct)}%`;
+      document.getElementById("subSlotValue").textContent = eur(slotValue(emp));
+      document.getElementById("subHours").textContent = `${result.newHours}h`;
+
+      const diffText = result.diff >= 0
+        ? `+${eur(result.diff)} über Ziel`
+        : `${eur(Math.abs(result.diff))} bis zum Ziel`;
+      document.getElementById("subDiff").textContent = diffText;
+
+      const formula = state.mode === "hours"
+        ? `Modus Stunden: ${emp.hours}h + ${Number(state.sliderValue).toFixed(Number(state.sliderValue)%1===0?0:1)}h = ${result.newHours}h · Neuer Umsatz ${eur(result.revenue)} · Provision ${eur(result.provision)}`
+        : `Modus Umsatz: ${eur(result.revenue)} - Ziel ${eur(emp.target)} = ${eur(Math.max(0,result.diff))} × ${emp.provRate}% = ${eur(result.provision)} Provision`;
+
+      document.getElementById("formulaBox").textContent = formula;
+    }
+
+    function updateInsights(){
+      const locEmployees = byLocation(state.selectedLocation);
+
+      const top = [...locEmployees].sort((a,b) => (b.currentRevenue / Math.max(1,b.target)) - (a.currentRevenue / Math.max(1,a.target)))[0];
+      const leakEmp = [...locEmployees].sort((a,b) => Math.max(0,b.target-b.currentRevenue) - Math.max(0,a.target-a.currentRevenue))[0];
+      const forecast = locEmployees.reduce((sum, e) => sum + Math.max(0, revenueFromExtraHours(e,1) - revenueFromExtraHours(e,0)), 0);
+      const targetSum = locEmployees.reduce((sum,e) => sum + e.target, 0);
+
+      document.getElementById("insTopName").textContent = top ? top.name : "–";
+      document.getElementById("insTopText").textContent = top ? `${pct(top.currentRevenue / top.target * 100)} Zielerreichung · ${eur(top.currentRevenue)}` : "–";
+
+      document.getElementById("insLeakName").textContent = leakEmp ? leakEmp.name : "–";
+      document.getElementById("insLeakText").textContent = leakEmp ? `${eur(Math.max(0, leakEmp.target - leakEmp.currentRevenue))} bis Ziel` : "–";
+
+      document.getElementById("insForecast").textContent = eur(forecast);
+      document.getElementById("insTargetSum").textContent = eur(targetSum);
+    }
+
+    function updateTeamList(){
+      const list = document.getElementById("teamList");
+      const locEmployees = byLocation(state.selectedLocation);
+
+      list.innerHTML = locEmployees.map(e => {
+        const p = e.target > 0 ? Math.min(100, Math.round((e.currentRevenue / e.target) * 100)) : 0;
+        const initials = e.name.split(" ").map(x => x[0]).slice(0,2).join("");
+        const pctColor = p >= 100 ? "var(--good)" : p >= 70 ? "var(--warn)" : "var(--bad)";
+        return `
+          <div class="row-card">
+            <div class="avatar">${initials}</div>
+            <div class="row-main">
+              <div class="name">${e.name}</div>
+              <div class="meta">${e.role} · ${e.hours}h/Woche · Ziel ${eur(e.target)}</div>
+              <div class="smallbar"><span style="width:${p}%"></span></div>
+            </div>
+            <div class="row-side">
+              <div class="big">${eur(e.currentRevenue)}</div>
+              <div class="pct" style="color:${pctColor}">${p}%</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function render(){
+      updateSelects();
+      updateHeroKPIs();
+
+      const emp = currentEmployee();
+      if(!emp) return;
+
+      updateEmployeeCard(emp);
+      configureSlider(emp);
+      updateCalculator(emp);
+      updateInsights();
+      updateTeamList();
+
+      document.querySelectorAll(".chip").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === state.mode);
+      });
+    }
+
+    document.getElementById("locationSelect").addEventListener("change", (e) => {
+      state.selectedLocation = e.target.value;
+      state.selectedEmployeeId = byLocation(state.selectedLocation)[0]?.id || "";
+      state.sliderValue = 0;
+      render();
+    });
+
+    document.getElementById("employeeSelect").addEventListener("change", (e) => {
+      state.selectedEmployeeId = e.target.value;
+      state.sliderValue = 0;
+      render();
+    });
+
+    document.querySelectorAll(".chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.mode = btn.dataset.mode;
+        const emp = currentEmployee();
+        state.sliderValue = state.mode === "hours" ? 0 : (emp?.currentRevenue || emp?.target || 0);
+        render();
+      });
+    });
+
+    document.getElementById("mainSlider").addEventListener("input", (e) => {
+      state.sliderValue = Number(e.target.value);
+      const emp = currentEmployee();
+      if(state.mode === "hours"){
+        document.getElementById("sliderTitle").textContent = `+${Number(state.sliderValue).toFixed(Number(state.sliderValue)%1===0?0:1)}h / Woche`;
+      } else {
+        document.getElementById("sliderTitle").textContent = `Monatsumsatz: ${eur(state.sliderValue)}`;
+      }
+      updateCalculator(emp);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const emp = currentEmployee();
+      state.mode = "hours";
+      state.sliderValue = 0;
+      render();
+    });
+
+    function boot(){
+      updateSelects();
+      const firstEmp = currentEmployee();
+      state.sliderValue = 0;
+      render();
+    }
+
+    boot();
+  </script>
+</body>
+</html>
