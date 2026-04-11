@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Praxis Cockpit – Analyse</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="analyse">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EP</div>
+        <div>
+          <h1>Elite Praxis Cockpit</h1>
+          <p>Analyse</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="umsatz.html">Umsatz</a>
+        <a class="nav-link" href="provision.html">Provision</a>
+        <a class="nav-link" href="mitarbeiter.html">Mitarbeiter</a>
+        <a class="nav-link active" href="analyse.html">Analyse</a>
+        <a class="nav-link" href="einstellungen.html">Einstellungen</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <div>
+          <h2>Analyse</h2>
+          <p>Übersicht mit Ampelsystem und Vergleich der wichtigsten Kennzahlen.</p>
+        </div>
+      </header>
+
+      <section class="grid cols-3">
+        <article class="card center-card"><span class="traffic-light" id="utilizationLight"></span><strong id="utilizationStatus">Auslastung</strong><small id="utilizationText"></small></article>
+        <article class="card center-card"><span class="traffic-light" id="revenueLight"></span><strong id="revenueStatus">Umsatz</strong><small id="revenueText"></small></article>
+        <article class="card center-card"><span class="traffic-light" id="costLight"></span><strong id="costStatus">Kostenquote</strong><small id="costText"></small></article>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><h3>Vergleich</h3></div>
+        <div class="table-wrap">
+          <table>
+            <tbody id="analysisTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/analysis-page.js"></script>
+</body>
+</html>
