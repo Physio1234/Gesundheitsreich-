@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Praxis Cockpit – Mitarbeiter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="mitarbeiter">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EP</div>
+        <div>
+          <h1>Elite Praxis Cockpit</h1>
+          <p>Mitarbeiterdaten</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="umsatz.html">Umsatz</a>
+        <a class="nav-link" href="provision.html">Provision</a>
+        <a class="nav-link active" href="mitarbeiter.html">Mitarbeiter</a>
+        <a class="nav-link" href="analyse.html">Analyse</a>
+        <a class="nav-link" href="einstellungen.html">Einstellungen</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <div>
+          <h2>Mitarbeiter</h2>
+          <p>Stammdaten, Personalkosten und Gewinnbeiträge pro Therapeut.</p>
+        </div>
+      </header>
+
+      <section class="grid cols-2">
+        <article class="card">
+          <div class="card-header"><h3>Neuer Mitarbeiter</h3></div>
+          <form id="employeeForm" class="form-grid">
+            <label>
+              Name
+              <input type="text" id="employeeName" maxlength="50" />
+            </label>
+            <label>
+              Wochenstunden
+              <input type="number" id="employeeHours" min="1" max="60" step="0.5" />
+            </label>
+            <label>
+              Gehalt brutto (€)
+              <input type="number" id="employeeSalary" min="0" step="1" />
+            </label>
+            <label>
+              Zielumsatz (€)
+              <input type="number" id="employeeTargetRevenue" min="0" step="1" />
+            </label>
+          </form>
+          <div class="button-row">
+            <button type="button" class="primary-button" id="saveEmployeeButton">Mitarbeiter speichern</button>
+            <button type="button" class="secondary-button" id="loadSampleEmployeesButton">Beispieldaten laden</button>
+          </div>
+          <div class="notice" id="employeeNotice"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header"><h3>Zusammenfassung</h3></div>
+          <div class="stack">
+            <div class="result-row"><span>Anzahl Mitarbeiter</span><strong id="employeeCountValue">0</strong></div>
+            <div class="result-row"><span>Gesamtgehalt brutto</span><strong id="grossSalaryTotalValue">0 €</strong></div>
+            <div class="result-row"><span>Gesamtkosten inkl. NK</span><strong id="fullCostTotalValue">0 €</strong></div>
+            <div class="result-row"><span>Gesamt-Zielumsatz</span><strong id="targetRevenueTotalValue">0 €</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><h3>Mitarbeiterliste</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Stunden</th>
+                <th>Gehalt</th>
+                <th>Kosten inkl. NK</th>
+                <th>Zielumsatz</th>
+                <th>Gewinnbeitrag</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/employees-page.js"></script>
+</body>
+</html>
