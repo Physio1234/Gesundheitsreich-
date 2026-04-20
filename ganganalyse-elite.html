@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>GangVision Elite · Gesundheitsreich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04100e;--bg2:#071512;--bg3:#0c1e1b;
+  --sur:#112220;--sur2:#1a3330;--sur3:rgba(17,34,32,.7);
+  --glass:rgba(12,30,27,.8);
+  --teal:#00d4b0;--teal2:#00a88a;--teal3:#007a65;--teal4:#004d3e;
+  --teal-glow:rgba(0,212,176,.18);--teal-glow2:rgba(0,212,176,.07);
+  --gold:#f0c040;--gold2:#c89a20;
+  --red:#ff4d6d;--orange:#ff8c42;--blue:#4cc9f0;--purple:#b17bff;
+  --text:#e0f4f1;--text2:#8abfb8;--text3:#4a8880;
+  --border:rgba(0,212,176,.13);--border2:rgba(0,212,176,.07);
+  --nav-h:70px;--hdr-h:60px;
+  --r:20px;--r-sm:12px;--r-xs:8px;
+  --font:'DM Sans',sans-serif;--font-d:'Syne',sans-serif;
+  --sh:0 4px 32px rgba(0,0,0,.45);
+  --sh-t:0 8px 40px rgba(0,212,176,.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--font);color:var(--text);display:flex;flex-direction:column;position:relative}
+
+/* PARTICLES */
+#pc{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.45}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+.o1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,176,.1),transparent 70%);top:-150px;left:-100px;animation:of1 14s ease-in-out infinite}
+.o2{width:350px;height:350px;background:radial-gradient(circle,rgba(240,192,64,.06),transparent 70%);bottom:80px;right:-80px;animation:of2 18s ease-in-out infinite}
+.o3{width:250px;height:250px;background:radial-gradient(circle,rgba(177,123,255,.05),transparent 70%);top:40%;left:60%;animation:of1 22s ease-in-out infinite reverse}
+@keyframes of1{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,70px)}}
+@keyframes of2{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,-50px)}}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,212,176,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,176,.02) 1px,transparent 1px);background-size:44px 44px}
+
+/* HDR */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr-h);background:rgba(4,16,14,.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:100}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--teal3));display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(0,212,176,.3);position:relative;overflow:hidden;flex-shrink:0}
+.hdr-logo::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent)}
+.hdr-logo svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2}
+.hdr-name{font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.hdr-name span{color:var(--teal)}
+.hdr-badge{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(177,123,255,.15);color:var(--purple);border:1px solid rgba(177,123,255,.25);border-radius:20px;padding:2px 7px;margin-left:4px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.loc-pill{font-size:.68rem;font-weight:700;color:var(--teal);background:var(--teal-glow2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;transition:background .2s}
+.loc-pill:active{background:var(--teal-glow)}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal3));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;border:none;cursor:pointer;box-shadow:0 0 0 2px var(--border);font-family:var(--font-d)}
+
+/* PAGES */
+.page{position:fixed;top:var(--hdr-h);left:0;right:0;bottom:var(--nav-h);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s,transform .25s;z-index:10}
+.page.active{opacity:1;pointer-events:all;transform:translateY(0)}
+.pg{padding:18px 16px 30px}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(4,16,14,.93);backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;align-items:center;z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--text3);transition:color .2s;padding:8px 0}
+.nb.on{color:var(--teal)}
+.nb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.nb.on svg{transform:scale(1.1)}
+.nb span{font-size:.62rem;font-weight:600;letter-spacing:.03em}
+.nb-dot{width:4px;height:4px;border-radius:50%;background:var(--teal);margin-top:1px;opacity:0;transition:opacity .2s}
+.nb.on .nb-dot{opacity:1}
+
+/* SHARED */
+.eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.sec-lbl{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;margin-top:22px}
+.sec-lbl:first-child{margin-top:0}
+.glass{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;background:linear-gradient(135deg,var(--teal),var(--teal3));color:#fff;font-family:var(--font);font-size:.94rem;font-weight:700;border:none;border-radius:var(--r);cursor:pointer;box-shadow:0 4px 24px rgba(0,212,176,.3);transition:transform .12s,opacity .15s;letter-spacing:.01em;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent)}
+.btn:active{transform:scale(.97);opacity:.9}
+.btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none;flex-shrink:0}
+.btn-out{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:transparent;color:var(--teal);font-family:var(--font);font-size:.9rem;font-weight:600;border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:background .15s;margin-top:10px}
+.btn-out:active{background:var(--teal-glow2)}
+.back-btn{display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.84rem;font-weight:600;color:var(--teal);margin-bottom:20px;padding:0}
+.back-btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none}
+.badge{font-size:.61rem;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0;letter-spacing:.03em}
+.b-ok{background:rgba(0,212,176,.12);color:var(--teal);border:1px solid rgba(0,212,176,.2)}
+.b-warn{background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.2)}
+.b-bad{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+.b-new{background:rgba(76,201,240,.1);color:var(--blue);border:1px solid rgba(76,201,240,.2)}
+.ib{display:inline-block;font-size:.61rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.03em}
+.iok{background:rgba(0,212,176,.12);color:var(--teal);border:1px solid rgba(0,212,176,.2)}
+.iwarn{background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.2)}
+.ibad{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+
+/* HOME */
+.home-hero{margin-bottom:18px;animation:fup .5s ease both}
+.home-hero h1{font-family:var(--font-d);font-size:2rem;font-weight:800;line-height:1.1;letter-spacing:-.025em;color:var(--text)}
+.home-hero h1 em{font-style:normal;color:var(--teal)}
+.home-hero .sub{font-size:.8rem;color:var(--text2);margin-top:5px}
+@keyframes fup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-cta{background:linear-gradient(145deg,#031a15,var(--sur));border:1px solid var(--border);border-radius:var(--r);padding:20px 18px;margin-bottom:6px;cursor:pointer;position:relative;overflow:hidden;box-shadow:var(--sh-t);transition:transform .15s;animation:fup .5s .06s both}
+.hero-cta:active{transform:scale(.98)}
+.hero-cta::before{content:'';position:absolute;top:0;right:0;bottom:0;width:50%;background:radial-gradient(ellipse at right,rgba(0,212,176,.1),transparent 70%)}
+.hero-cta::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.4}
+.hero-cta .ct{font-family:var(--font-d);font-size:1.35rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:3px}
+.hero-cta .cs{font-size:.76rem;color:var(--text2)}
+.hero-cta .arr{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(0,212,176,.15);display:flex;align-items:center;justify-content:center}
+.hero-cta .arr svg{width:18px;height:18px;stroke:var(--teal);stroke-width:2.5;fill:none}
+.hero-cta .hbadge{display:inline-flex;align-items:center;gap:5px;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:rgba(0,212,176,.12);color:var(--teal);border:1px solid rgba(0,212,176,.2);border-radius:20px;padding:3px 9px;margin-bottom:10px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;animation:fup .5s .12s both}
+.sc{background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 10px;text-align:center;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.35}
+.sc .sv{font-family:var(--font-d);font-size:1.5rem;font-weight:700;color:var(--teal)}
+.sc .sl{font-size:.6rem;color:var(--text3);font-weight:500;margin-top:2px;letter-spacing:.02em}
+
+.ri-list{display:flex;flex-direction:column;gap:8px;animation:fup .5s .18s both}
+.ri{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border2);border-radius:var(--r-sm);padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s,transform .12s}
+.ri:active{transform:scale(.98);border-color:var(--border)}
+.ri-av{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;font-family:var(--font-d)}
+.ri-inf{flex:1}
+.ri-name{font-size:.86rem;font-weight:600;color:var(--text)}
+.ri-meta{font-size:.68rem;color:var(--text3);margin-top:2px}
+
+/* ANALYSE WIZARD */
+.wiz-hero{background:linear-gradient(145deg,#021510,var(--bg3));border:1px solid var(--border);border-radius:var(--r);padding:22px 18px;margin-bottom:18px;position:relative;overflow:hidden}
+.wiz-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(0,212,176,.08),transparent 60%)}
+.wiz-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.4}
+.wiz-hero h2{font-family:var(--font-d);font-size:1.45rem;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.wiz-hero p{font-size:.76rem;color:var(--text2);margin-top:4px}
+
+.step-ind{display:flex;align-items:center;gap:5px;margin-bottom:20px}
+.sd{height:3px;flex:1;border-radius:2px;background:var(--sur2);transition:background .3s}
+.sd.done{background:var(--teal)}
+.sd.cur{background:linear-gradient(90deg,var(--teal),rgba(0,212,176,.35))}
+.slbl{font-size:.66rem;color:var(--text3);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.tc{background:var(--sur);border:1.5px solid var(--border2);border-radius:var(--r);padding:18px 12px;cursor:pointer;transition:all .2s;text-align:center}
+.tc:active{transform:scale(.97)}
+.tc.sel{border-color:var(--teal);background:var(--teal-glow2);box-shadow:0 0 20px rgba(0,212,176,.1)}
+.tc-icon{width:50px;height:50px;border-radius:15px;background:var(--sur2);display:flex;align-items:center;justify-content:center;margin:0 auto 11px;transition:all .2s}
+.tc.sel .tc-icon{background:var(--teal);box-shadow:0 4px 16px rgba(0,212,176,.3)}
+.tc-icon svg{width:25px;height:25px;stroke:var(--text3);stroke-width:1.8;fill:none;transition:stroke .2s}
+.tc.sel .tc-icon svg{stroke:#fff}
+.tc h3{font-size:.83rem;font-weight:700;color:var(--text)}
+.tc p{font-size:.67rem;color:var(--text3);margin-top:3px}
+.tc-row{background:var(--sur);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.tc-row.sel{border-color:var(--teal);background:var(--teal-glow2)}
+.tc-row h3{font-size:.86rem;font-weight:700;color:var(--text)}
+.tc-row p{font-size:.68rem;color:var(--text3);margin-top:2px}
+
+.fl{margin-bottom:12px}
+.fl label{font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:5px;display:block;letter-spacing:.03em}
+.fi{width:100%;padding:12px 14px;background:var(--sur);border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:.88rem;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.fi:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,212,176,.08)}
+.fi option{background:var(--bg2)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.step3-card{background:linear-gradient(145deg,#031a15,var(--sur));border:1px solid var(--border);border-radius:var(--r);padding:28px 18px;text-align:center;margin-bottom:18px;position:relative;overflow:hidden}
+.step3-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(0,212,176,.08),transparent 60%)}
+.pulse-ring{width:76px;height:76px;border-radius:50%;background:rgba(0,212,176,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative}
+.pulse-ring::before,.pulse-ring::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(0,212,176,.12);animation:pls 2.5s ease-in-out infinite}
+.pulse-ring::after{inset:-16px;animation-delay:.8s;border-color:rgba(0,212,176,.06)}
+@keyframes pls{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.06);opacity:1}}
+.pulse-ring svg{width:34px;height:34px;stroke:var(--teal);stroke-width:1.5;fill:none;position:relative;z-index:1}
+.step3-card h3{font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.step3-card p{font-size:.78rem;color:var(--text2);line-height:1.55}
+.step3-card strong{color:var(--teal)}
+
+/* ELITE badge strip */
+.elite-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;justify-content:center}
+.es{font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:10px;border:1px solid}
+.es.t{background:rgba(0,212,176,.1);color:var(--teal);border-color:rgba(0,212,176,.2)}
+.es.g{background:rgba(240,192,64,.08);color:var(--gold);border-color:rgba(240,192,64,.2)}
+.es.p{background:rgba(177,123,255,.08);color:var(--purple);border-color:rgba(177,123,255,.2)}
+
+.info-card{background:var(--sur);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:14px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0}
+.info-row:not(:last-child){border-bottom:1px solid var(--border2)}
+.info-row .k{font-size:.78rem;font-weight:500;color:var(--text2)}
+.info-row .v{font-size:.78rem;font-weight:700;color:var(--teal)}
+
+/* ─── CAMERA FULLSCREEN ─── */
+.cam-screen{position:fixed;inset:0;background:#020d0b;z-index:500;display:none;flex-direction:column}
+.cam-screen.open{display:flex}
+.cam-hdr{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;z-index:20;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
+.cib{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.cib:active{background:rgba(255,255,255,.2)}
+.cib svg{width:20px;height:20px;stroke:#fff;stroke-width:2.2;fill:none}
+.cam-pill{background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px;color:#fff;font-size:.75rem;font-weight:700;letter-spacing:.05em}
+
+.cam-body{position:relative;flex:1;overflow:hidden}
+#camVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#poseCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* 3D info overlay */
+.d3-panel{position:absolute;top:68px;left:10px;display:flex;flex-direction:column;gap:5px;z-index:15}
+.d3p{background:rgba(0,0,0,.65);backdrop-filter:blur(10px);border:1px solid rgba(0,212,176,.2);border-radius:9px;padding:5px 10px}
+.d3p-lbl{font-size:.56rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(0,212,176,.7);margin-bottom:2px}
+.d3p-val{font-family:var(--font-d);font-size:.75rem;font-weight:700;color:#fff}
+
+.angle-panel{position:absolute;top:68px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:15}
+.ap{background:rgba(0,0,0,.65);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:5px 10px;text-align:right}
+.ap-val{font-family:var(--font-d);font-size:.82rem;font-weight:700;color:#fff}
+.ap-lbl{font-size:.56rem;color:rgba(255,255,255,.45);font-weight:500}
+
+.hint-wrap{position:absolute;top:68px;left:0;right:0;text-align:center;z-index:10;pointer-events:none}
+.hint-pill{display:inline-block;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:20px;color:#fff;font-size:.74rem;font-weight:600;padding:6px 16px}
+.hint-pill.rec{background:rgba(255,77,109,.22);border-color:rgba(255,77,109,.35);color:#ffb3c0}
+.hint-pill.ready{background:rgba(0,212,176,.18);border-color:rgba(0,212,176,.3);color:#80ffe8}
+
+/* Landmark counter */
+.lm-counter{position:absolute;bottom:180px;left:50%;transform:translateX(-50%);z-index:15;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);border:1px solid rgba(0,212,176,.2);border-radius:12px;padding:6px 14px;display:flex;align-items:center;gap:8px}
+.lm-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.lm-txt{font-size:.68rem;font-weight:700;color:var(--teal);letter-spacing:.04em}
+
+.cam-footer{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 28px;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:20}
+.cam-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.cst{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.09);border-radius:11px;padding:8px 6px;text-align:center}
+.cst.hl{background:rgba(0,212,176,.1);border-color:rgba(0,212,176,.22)}
+.cst .cv{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:#fff}
+.cst.hl .cv{color:var(--teal)}
+.cst .cl{font-size:.57rem;color:rgba(255,255,255,.45);font-weight:500;margin-top:1px}
+
+/* extra biomech stats row */
+.bio-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px}
+.bst{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:6px 5px;text-align:center}
+.bst .bv{font-family:var(--font-d);font-size:.95rem;font-weight:700;color:var(--gold)}
+.bst .bl{font-size:.54rem;color:rgba(255,255,255,.4);margin-top:1px}
+
+.cam-pb{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:10px;overflow:hidden}
+.cam-pb-fill{height:100%;background:linear-gradient(90deg,var(--teal),#00ffcc);border-radius:2px;width:0%;transition:width .5s}
+
+.rec-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;background:linear-gradient(135deg,var(--teal),var(--teal3));color:#fff;font-family:var(--font);font-size:.93rem;font-weight:700;border:none;border-radius:var(--r);cursor:pointer;box-shadow:0 0 28px rgba(0,212,176,.3);transition:transform .12s,opacity .15s;letter-spacing:.02em}
+.rec-btn.rec{background:linear-gradient(135deg,var(--red),#c1121f);box-shadow:0 0 28px rgba(255,77,109,.3)}
+.rec-btn:active{transform:scale(.97);opacity:.9}
+.rdot{width:9px;height:9px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+
+/* PATIENTEN */
+.sbar{display:flex;align-items:center;gap:10px;background:var(--sur);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;margin-bottom:12px}
+.sbar svg{width:17px;height:17px;stroke:var(--text3);stroke-width:2;fill:none;flex-shrink:0}
+.sbar input{flex:1;border:none;background:none;outline:none;font-family:var(--font);font-size:.87rem;color:var(--text)}
+.sbar input::placeholder{color:var(--text3)}
+.pat-item{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border2);border-radius:var(--r);padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s,transform .12s;margin-bottom:8px}
+.pat-item:active{transform:scale(.98);border-color:var(--border)}
+.pat-av{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0;font-family:var(--font-d)}
+.pat-info{flex:1}
+.pat-name{font-size:.88rem;font-weight:600;color:var(--text)}
+.pat-sub{font-size:.68rem;color:var(--text3);margin-top:2px}
+.chevron svg{width:17px;height:17px;stroke:var(--text3);stroke-width:2;fill:none}
+
+/* SUBPAGE */
+.subpage{position:fixed;top:var(--hdr-h);left:0;right:0;bottom:var(--nav-h);overflow-y:auto;background:var(--bg2);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:150}
+.subpage.open{transform:translateX(0)}
+.sp-inner{padding:18px 16px 32px}
+
+/* REPORT */
+.rep-hero{border-radius:var(--r);padding:20px 18px;margin-bottom:16px;background:linear-gradient(145deg,#021510,var(--sur));border:1px solid var(--border);position:relative;overflow:hidden}
+.rep-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+.rep-hero h2{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.rhmeta{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.6}
+.rep-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.rtag{font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.04em;background:rgba(0,212,176,.1);color:var(--teal);border:1px solid rgba(0,212,176,.2)}
+.rtag.p{background:rgba(177,123,255,.1);color:var(--purple);border-color:rgba(177,123,255,.2)}
+.rtag.g{background:rgba(240,192,64,.08);color:var(--gold);border-color:rgba(240,192,64,.2)}
+
+/* 3D score section */
+.score-row{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.score-row::-webkit-scrollbar{display:none}
+.scc{flex-shrink:0;min-width:76px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 8px;text-align:center;position:relative;overflow:hidden}
+.scc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.4}
+.scc .slbl{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.scc .sval{font-family:var(--font-d);font-size:1.35rem;font-weight:700;color:var(--teal)}
+.scc .sref{font-size:.58rem;color:var(--text3);margin-top:2px}
+.scc.gold .sval{color:var(--gold)}
+.scc.gold::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.scc.pur .sval{color:var(--purple)}
+.scc.pur::before{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+
+/* 3D axes display */
+.axes-card{background:var(--sur);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;margin-bottom:14px}
+.axes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.axis-item{text-align:center;padding:8px 4px}
+.axis-label{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.axis-label.x{color:#ff6b7a}
+.axis-label.y{color:#7bff8c}
+.axis-label.z{color:#7bb9ff}
+.axis-val{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--text)}
+.axis-sub{font-size:.6rem;color:var(--text3);margin-top:2px}
+
+.ptable{width:100%;border-collapse:collapse}
+.ptable thead tr{background:linear-gradient(90deg,var(--teal4),var(--teal3))}
+.ptable thead th{padding:9px 11px;text-align:left;font-size:.66rem;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.06em;text-transform:uppercase}
+.ptable tbody tr{border-bottom:1px solid var(--border2)}
+.ptable tbody tr:last-child{border-bottom:none}
+.ptable tbody td{padding:10px 11px;font-size:.76rem;color:var(--text2)}
+.ptable tbody td:first-child{color:var(--text);font-weight:500}
+.vok{color:var(--teal)!important;font-weight:700!important}
+.vwarn{color:var(--orange)!important;font-weight:700!important}
+.vbad{color:var(--red)!important;font-weight:700!important}
+
+/* GANGPHASEN */
+.gp-scroll{overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.gp-scroll::-webkit-scrollbar{display:none}
+.gp-track{display:flex;gap:6px;width:max-content;padding:2px}
+.gp-ph{width:82px;flex-shrink:0;background:var(--sur);border:1px solid var(--border2);border-radius:var(--r-sm);padding:9px 7px;text-align:center;transition:border-color .2s}
+.gp-ph.hl{border-color:var(--orange);background:rgba(255,140,66,.05)}
+.gp-num{font-size:.57rem;font-weight:700;color:var(--text3);margin-bottom:5px;letter-spacing:.04em}
+.gp-fig{width:34px;height:34px;margin:0 auto 5px;display:flex;align-items:center;justify-content:center}
+.gp-name{font-size:.57rem;font-weight:600;color:var(--text2);line-height:1.3}
+.gp-deg{font-size:.68rem;font-weight:700;color:var(--teal);margin-top:3px}
+.gp-ph.hl .gp-deg{color:var(--orange)}
+
+.jrow{display:flex;align-items:center;margin-bottom:7px}
+.jlbl{width:60px;font-size:.68rem;font-weight:600;color:var(--text2);flex-shrink:0;letter-spacing:.02em}
+.jbars{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.jbars::-webkit-scrollbar{display:none}
+.jbc{flex-shrink:0;width:82px}
+.jb{height:20px;border-radius:5px;position:relative;background:var(--sur2);overflow:hidden}
+.jbf{position:absolute;top:0;bottom:0;left:0;border-radius:5px;background:linear-gradient(90deg,var(--teal3),var(--teal))}
+.jbf.w{background:linear-gradient(90deg,#9a4400,var(--orange))}
+.jbf.b{background:linear-gradient(90deg,#7a0016,var(--red))}
+.jbv{font-size:.59rem;text-align:center;color:var(--text3);margin-top:2px}
+
+/* CHARTS */
+.chart-wrap{padding:14px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px}
+.chart-title{font-size:.73rem;font-weight:700;color:var(--text2);margin-bottom:10px;letter-spacing:.02em}
+.chart-leg{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.legitem{display:flex;align-items:center;gap:5px;font-size:.64rem;color:var(--text3)}
+.legdot{width:7px;height:7px;border-radius:50%}
+
+/* EXPORT */
+.exp-row{display:flex;gap:8px;margin-top:14px}
+.expbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:13px;border-radius:var(--r-sm);font-family:var(--font);font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:opacity .15s,transform .12s;letter-spacing:.02em}
+.expbtn:active{opacity:.8;transform:scale(.97)}
+.expbtn.p{background:linear-gradient(135deg,var(--teal),var(--teal3));color:#fff;box-shadow:0 4px 14px rgba(0,212,176,.22)}
+.expbtn.s{background:var(--sur);color:var(--teal);border:1.5px solid var(--border)}
+.expbtn.j{background:var(--sur);color:var(--gold);border:1.5px solid rgba(240,192,64,.2)}
+.expbtn svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav-h)+14px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--sur2);color:var(--text);border:1px solid var(--border);padding:9px 18px;border-radius:24px;font-size:.8rem;font-weight:600;box-shadow:var(--sh);opacity:0;transition:opacity .25s,transform .25s;z-index:700;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<canvas id="pc"></canvas>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="m8 12 3 3 5-5"/></svg></div>
+    <span class="hdr-name">Gang<span>Vision</span></span>
+    <span class="hdr-badge">Elite</span>
+  </div>
+  <div class="hdr-right">
+    <span class="loc-pill" id="locPill" onclick="cycleLoc()">Lübeck</span>
+    <button class="av">TP</button>
+  </div>
+</header>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="pg">
+    <div class="home-hero">
+      <div class="eyebrow">Gesundheitsreich · 3D-Ganganalyse</div>
+      <h1>Hallo,<br><em>Tobias.</em></h1>
+      <p class="sub">Montag, 20. April 2026 · BlazePose GHUM Heavy · 75 Landmarks</p>
+    </div>
+
+    <div class="hero-cta" onclick="navTo('analyse')">
+      <div class="hbadge">
+        <svg viewBox="0 0 10 10" style="width:8px;height:8px;fill:var(--teal)"><circle cx="5" cy="5" r="5"/></svg>
+        3D · 75 Punkte · Echtzeit
+      </div>
+      <div class="ct">Neue Ganganalyse</div>
+      <div class="cs">BlazePose GHUM Heavy · X/Y/Z-Koordinaten · Kalman-Glättung</div>
+      <div class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <div class="sec-lbl">Heute</div>
+    <div class="stat-grid">
+      <div class="sc"><div class="sv" id="stat-a">3</div><div class="sl">Analysen</div></div>
+      <div class="sc"><div class="sv" id="stat-s">84%</div><div class="sl">⌀ Sym.</div></div>
+      <div class="sc"><div class="sv" id="stat-st">–</div><div class="sl">⌀ Schritte</div></div>
+    </div>
+
+    <div class="sec-lbl">Letzte Analysen</div>
+    <div class="ri-list">
+      <div class="ri" onclick="openReport('anne')"><div class="ri-av" style="background:linear-gradient(135deg,#00d4b0,#007a65)">AM</div><div class="ri-inf"><div class="ri-name">Anne Meier</div><div class="ri-meta">Lateral 3D · 22 Schr. · 75 LM · Heute</div></div><div class="badge b-warn">86%</div></div>
+      <div class="ri" onclick="openReport('peter')"><div class="ri-av" style="background:linear-gradient(135deg,#ff8c42,#c05a00)">PK</div><div class="ri-inf"><div class="ri-name">Peter Klein</div><div class="ri-meta">Frontal 3D · 18 Schr. · 75 LM · Heute</div></div><div class="badge b-bad">71%</div></div>
+      <div class="ri" onclick="openReport('maria')"><div class="ri-av" style="background:linear-gradient(135deg,#4cc9f0,#1a6fb5)">MS</div><div class="ri-inf"><div class="ri-name">Maria Schmidt</div><div class="ri-meta">Treppe 3D · 24 Schr. · Gestern</div></div><div class="badge b-ok">91%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYSE -->
+<div class="page" id="page-analyse">
+  <div class="pg">
+    <div class="wiz-hero">
+      <div class="eyebrow">Elite · BlazePose GHUM Heavy</div>
+      <h2>Neue 3D-Ganganalyse</h2>
+      <p>75 Landmarks · X/Y/Z · Kalman-Glättung · &lt;5 Min.</p>
+    </div>
+
+    <div id="step1">
+      <div class="step-ind"><div class="sd cur"></div><div class="sd"></div><div class="sd"></div><span class="slbl">Analyseart</span></div>
+      <div class="type-grid">
+        <div class="tc sel" id="at-lateral" onclick="selType('lateral')">
+          <div class="tc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2.5"/><path d="M9 8.5c1 0 2.5.5 3 2l1 4-2.5 2 1.5 5"/><path d="M12 14.5l2.5 1.5"/></svg></div>
+          <h3>Lateral</h3><p>Seitenansicht · Sagittal</p>
+        </div>
+        <div class="tc" id="at-frontal" onclick="selType('frontal')">
+          <div class="tc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2.5"/><line x1="12" y1="7" x2="12" y2="16"/><line x1="7" y1="10" x2="17" y2="10"/><line x1="12" y1="16" x2="8" y2="22"/><line x1="12" y1="16" x2="16" y2="22"/></svg></div>
+          <h3>Frontal</h3><p>Frontansicht · Koronal</p>
+        </div>
+      </div>
+      <div class="tc-row" id="at-treppe" onclick="selType('treppe')">
+        <div class="tc-icon" style="flex-shrink:0;margin:0;width:46px;height:46px"><svg viewBox="0 0 24 24"><path d="M3 21h5v-5h5v-5h5V6h3"/></svg></div>
+        <div><h3>Treppensteigen</h3><p>Auf- und Abstieg · 3D-Belastungsanalyse</p></div>
+      </div>
+      <button class="btn" onclick="goStep(2)">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Weiter
+      </button>
+    </div>
+
+    <div id="step2" style="display:none">
+      <div class="step-ind"><div class="sd done"></div><div class="sd cur"></div><div class="sd"></div><span class="slbl">Patientendaten</span></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fl" style="margin:0"><label>Vorname</label><input class="fi" id="fvn" placeholder="Vorname"></div>
+        <div class="fl" style="margin:0"><label>Nachname</label><input class="fi" id="fnn" placeholder="Nachname"></div>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fl" style="margin:0"><label>Geburtsdatum</label><input class="fi" id="fgeb" type="date"></div>
+        <div class="fl" style="margin:0"><label>Größe (cm)</label><input class="fi" id="fgr" type="number" placeholder="175"></div>
+      </div>
+      <div class="fl"><label>Gewicht (kg)</label><input class="fi" id="fkg" type="number" placeholder="70"></div>
+      <div class="fl"><label>Geschlecht</label><select class="fi" id="fsex"><option>Weiblich</option><option>Männlich</option><option>Divers</option></select></div>
+      <div class="fl"><label>Diagnose / Indikation</label><input class="fi" id="fdiag" placeholder="z.B. Kniearthrose links, Hüft-TEP..."></div>
+      <button class="btn" onclick="goStep(3)">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Weiter zur Kamera
+      </button>
+      <button class="btn-out" onclick="goStep(1)">Zurück</button>
+    </div>
+
+    <div id="step3" style="display:none">
+      <div class="step-ind"><div class="sd done"></div><div class="sd done"></div><div class="sd cur"></div><span class="slbl">3D-Messung</span></div>
+      <div class="step3-card">
+        <div class="pulse-ring"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <h3>3D-Kamera bereit</h3>
+        <p>BlazePose GHUM Heavy · <strong>33 Body + 21×2 Hände</strong><br>Echte 3D-Koordinaten in Metern · Kalman-geglättet<br>Patient <strong>3–5 m</strong> · seitlich zur Kamera</p>
+      </div>
+      <div class="elite-strip">
+        <div class="es t">75 Landmarks</div>
+        <div class="es t">3D x/y/z</div>
+        <div class="es g">Kalman-Filter</div>
+        <div class="es g">Hände</div>
+        <div class="es p">GHUM Heavy</div>
+        <div class="es p">Beckenachse</div>
+        <div class="es t">Export CSV/JSON</div>
+      </div>
+      <div class="info-card">
+        <div class="info-row"><span class="k">Analyseart</span><span class="v" id="s3type">Lateral</span></div>
+        <div class="info-row"><span class="k">Patient</span><span class="v" id="s3pat">–</span></div>
+        <div class="info-row"><span class="k">Modell</span><span class="v">BlazePose GHUM Heavy</span></div>
+        <div class="info-row"><span class="k">Standort</span><span class="v" id="s3loc">Lübeck</span></div>
+      </div>
+      <button class="btn" onclick="openCam()">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        3D-Kamera starten
+      </button>
+      <button class="btn-out" onclick="goStep(2)">Zurück</button>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENTEN -->
+<div class="page" id="page-patienten">
+  <div class="pg">
+    <div style="margin-bottom:16px"><div class="eyebrow">Patientenverwaltung</div><h2 style="font-family:var(--font-d);font-size:1.5rem;font-weight:700;color:var(--text);letter-spacing:-.01em">Patienten</h2><p style="font-size:.76rem;color:var(--text2);margin-top:3px">5 Patienten · 3 Standorte</p></div>
+    <div class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Patient suchen…" oninput="filterP(this.value)"></div>
+    <div id="plist"></div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="page" id="page-reports">
+  <div class="pg">
+    <div style="margin-bottom:16px"><div class="eyebrow">3D-Analyseergebnisse</div><h2 style="font-family:var(--font-d);font-size:1.5rem;font-weight:700;color:var(--text);letter-spacing:-.01em">Reports</h2></div>
+    <div class="ri" onclick="openReport('anne')"><div class="ri-av" style="background:linear-gradient(135deg,#00d4b0,#007a65)">AM</div><div class="ri-inf"><div class="ri-name">Anne Meier</div><div class="ri-meta">Lateral 3D · 20.04.2026 · 22 Schritte · 75 LM</div></div><div class="badge b-warn">86%</div></div>
+    <div class="ri" onclick="openReport('peter')"><div class="ri-av" style="background:linear-gradient(135deg,#ff8c42,#c05a00)">PK</div><div class="ri-inf"><div class="ri-name">Peter Klein</div><div class="ri-meta">Frontal 3D · 20.04.2026 · 18 Schritte · 75 LM</div></div><div class="badge b-bad">71%</div></div>
+    <div class="ri" onclick="openReport('maria')"><div class="ri-av" style="background:linear-gradient(135deg,#4cc9f0,#1a6fb5)">MS</div><div class="ri-inf"><div class="ri-name">Maria Schmidt</div><div class="ri-meta">Treppe 3D · 19.04.2026 · 24 Schritte</div></div><div class="badge b-ok">91%</div></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nb on" id="nav-home" onclick="navTo('home')"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><polyline points="9,21 9,12 15,12 15,21"/></svg><span>Home</span><div class="nb-dot"></div></button>
+  <button class="nb" id="nav-analyse" onclick="navTo('analyse')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/></svg><span>Analyse</span><div class="nb-dot"></div></button>
+  <button class="nb" id="nav-patienten" onclick="navTo('patienten')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Patienten</span><div class="nb-dot"></div></button>
+  <button class="nb" id="nav-reports" onclick="navTo('reports')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><span>Reports</span><div class="nb-dot"></div></button>
+</nav>
+
+<!-- CAMERA ELITE -->
+<div class="cam-screen" id="camScreen">
+  <div class="cam-hdr">
+    <button class="cib" onclick="closeCam()"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="cam-pill" id="camTitle">3D · LATERAL</div>
+    <button class="cib" onclick="flipCam()"><svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="m23 14-4.36 4.36A9 9 0 0 1 3.51 15"/></svg></button>
+  </div>
+
+  <div class="cam-body">
+    <video id="camVideo" playsinline muted autoplay></video>
+    <canvas id="poseCanvas"></canvas>
+
+    <div class="hint-wrap" id="hintWrap">
+      <div class="hint-pill" id="camHint">KI-Modell wird geladen…</div>
+    </div>
+
+    <!-- 3D coordinates panel -->
+    <div class="d3-panel">
+      <div class="d3p"><div class="d3p-lbl">Beckenneigung</div><div class="d3p-val" id="d3Pelvis">–°</div></div>
+      <div class="d3p"><div class="d3p-lbl">Wirbelsäule</div><div class="d3p-val" id="d3Spine">–°</div></div>
+      <div class="d3p"><div class="d3p-lbl">Schulterachse</div><div class="d3p-val" id="d3Shoulder">–°</div></div>
+    </div>
+
+    <!-- Joint angles panel -->
+    <div class="angle-panel">
+      <div class="ap"><div class="ap-val" id="apHip">–°</div><div class="ap-lbl">Hüfte</div></div>
+      <div class="ap"><div class="ap-val" id="apKnee">–°</div><div class="ap-lbl">Knie</div></div>
+      <div class="ap"><div class="ap-val" id="apAnkle">–°</div><div class="ap-lbl">Sprung</div></div>
+      <div class="ap"><div class="ap-val" id="apZ">–m</div><div class="ap-lbl">Z-Tiefe</div></div>
+    </div>
+
+    <!-- Landmark counter -->
+    <div class="lm-counter" id="lmCounter" style="display:none">
+      <div class="lm-dot"></div>
+      <div class="lm-txt" id="lmTxt">0 / 75 Landmarks</div>
+    </div>
+  </div>
+
+  <div class="cam-footer">
+    <div class="cam-stats">
+      <div class="cst hl"><div class="cv" id="csSteps">0</div><div class="cl">Schritte</div></div>
+      <div class="cst"><div class="cv" id="csSym">–</div><div class="cl">Symmetrie</div></div>
+      <div class="cst"><div class="cv" id="csCad">–</div><div class="cl">Kadenz</div></div>
+      <div class="cst"><div class="cv" id="csTime">0s</div><div class="cl">Zeit</div></div>
+    </div>
+    <div class="bio-row">
+      <div class="bst"><div class="bv" id="bioPelvis">–°</div><div class="bl">Becken</div></div>
+      <div class="bst"><div class="bv" id="bioSpine">–°</div><div class="bl">Wirbels.</div></div>
+      <div class="bst"><div class="bv" id="bioTrunk">–°</div><div class="bl">Rumpf</div></div>
+    </div>
+    <div class="cam-pb"><div class="cam-pb-fill" id="camPb"></div></div>
+    <button class="rec-btn" id="recBtn" onclick="toggleRec()">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="#fff" stroke="none"/></svg>
+      Messung starten
+    </button>
+  </div>
+</div>
+
+<!-- REPORT SUBPAGE -->
+<div class="subpage" id="subReport">
+  <div class="sp-inner">
+    <button class="back-btn" onclick="closeReport()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Zurück</button>
+    <div class="rep-hero">
+      <div class="eyebrow">3D-Analyseergebnis · Elite</div>
+      <h2 id="rhName">–</h2>
+      <div class="rhmeta" id="rhMeta"></div>
+      <div class="rep-tags">
+        <span class="rtag" id="rhType">–</span>
+        <span class="rtag p">BlazePose GHUM Heavy</span>
+        <span class="rtag g">75 Landmarks</span>
+        <span class="rtag" id="rhLoc">–</span>
+        <span class="rtag">T. Patzer</span>
+      </div>
+    </div>
+
+    <div class="sec-lbl">3D-Gesamtbewertung</div>
+    <div class="score-row">
+      <div class="scc"><div class="slbl">Symmetrie</div><div class="sval" id="scSym">–</div><div class="sref">Ref.&gt;90%</div></div>
+      <div class="scc"><div class="slbl">Geschw.</div><div class="sval" id="scSpeed">–</div><div class="sref">km/h</div></div>
+      <div class="scc"><div class="slbl">Kadenz</div><div class="sval" id="scCad">–</div><div class="sref">Scp/min</div></div>
+      <div class="scc gold"><div class="slbl">Becken</div><div class="sval" id="scPelvis">–</div><div class="sref">Neigung°</div></div>
+      <div class="scc gold"><div class="slbl">Wirbels.</div><div class="sval" id="scSpine">–</div><div class="sref">Lateral°</div></div>
+      <div class="scc pur"><div class="slbl">3D-Score</div><div class="sval" id="sc3d">–</div><div class="sref">/100</div></div>
+    </div>
+
+    <div class="sec-lbl">3D-Achsen (Hüftmittelpunkt)</div>
+    <div class="axes-card">
+      <div class="axes-grid">
+        <div class="axis-item"><div class="axis-label x">X-Achse</div><div class="axis-val" id="ax-x">–</div><div class="axis-sub">Lateral (m)</div></div>
+        <div class="axis-item"><div class="axis-label y">Y-Achse</div><div class="axis-val" id="ax-y">–</div><div class="axis-sub">Vertikal (m)</div></div>
+        <div class="axis-item"><div class="axis-label z">Z-Achse</div><div class="axis-val" id="ax-z">–</div><div class="axis-sub">Sagittal (m)</div></div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">Biomechanische Parameter</div>
+    <div style="background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r);overflow:auto;margin-bottom:14px">
+      <table class="ptable"><thead><tr><th>Parameter</th><th>Messwert</th><th>Referenz</th><th>Status</th></tr></thead><tbody id="ptbody"></tbody></table>
+    </div>
+
+    <div class="sec-lbl">Gangphasen (8 Phasen)</div>
+    <div style="background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px">
+      <div class="gp-scroll"><div class="gp-track" id="gpTrack"></div></div>
+      <div style="margin-top:14px">
+        <div class="jrow"><span class="jlbl">Hüfte 3D</span><div class="jbars" id="jbHip"></div></div>
+        <div class="jrow" style="margin-top:6px"><span class="jlbl">Knie 3D</span><div class="jbars" id="jbKnee"></div></div>
+        <div class="jrow" style="margin-top:6px"><span class="jlbl">Sprung 3D</span><div class="jbars" id="jbAnkle"></div></div>
+        <div class="jrow" style="margin-top:6px"><span class="jlbl">Becken</span><div class="jbars" id="jbPelvis"></div></div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">3D-Knieflexion / Gangzyklus</div>
+    <div class="chart-wrap">
+      <div class="chart-title">Knieflexion/-extension (3D) – Gangzyklus %</div>
+      <svg viewBox="0 0 310 115" style="width:100%;height:auto" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,212,176,.14)"/><stop offset="100%" stop-color="rgba(0,212,176,0)"/></linearGradient>
+          <linearGradient id="fg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(177,123,255,.08)"/><stop offset="100%" stop-color="rgba(177,123,255,0)"/></linearGradient>
+        </defs>
+        <line x1="32" y1="5" x2="32" y2="98" stroke="rgba(0,212,176,.08)" stroke-width="1"/>
+        <line x1="32" y1="98" x2="300" y2="98" stroke="rgba(0,212,176,.08)" stroke-width="1"/>
+        <line x1="32" y1="55" x2="300" y2="55" stroke="rgba(0,212,176,.05)" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="32" y1="28" x2="300" y2="28" stroke="rgba(0,212,176,.04)" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="32" y1="80" x2="300" y2="80" stroke="rgba(0,212,176,.03)" stroke-width="1" stroke-dasharray="3,5"/>
+        <text x="4" y="31" font-size="7" fill="rgba(0,212,176,.5)">60°</text>
+        <text x="8" y="58" font-size="7" fill="rgba(0,212,176,.5)">0°</text>
+        <text x="255" y="110" font-size="7" fill="rgba(0,212,176,.4)">Zyklus %</text>
+        <path id="kcFill" d="" fill="url(#fg)"/>
+        <path id="kcFill2" d="" fill="url(#fg2)"/>
+        <path id="kcL" d="" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="kcR" d="" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="kcRef" d="" fill="none" stroke="rgba(177,123,255,.35)" stroke-width="1.2" stroke-dasharray="2,3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="chart-leg">
+        <div class="legitem"><div class="legdot" style="background:var(--teal)"></div>Linkes Bein (3D)</div>
+        <div class="legitem"><div class="legdot" style="background:var(--gold)"></div>Rechtes Bein (3D)</div>
+        <div class="legitem"><div class="legdot" style="background:var(--purple)"></div>Normkurve</div>
+      </div>
+    </div>
+
+    <div class="exp-row">
+      <button class="expbtn p" onclick="showToast('PDF wird erstellt…')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>PDF
+      </button>
+      <button class="expbtn j" onclick="exportJSON()">
+        <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>JSON
+      </button>
+      <button class="expbtn s" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>CSV
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- TF.js + BlazePose GHUM via @tensorflow-models/pose-detection -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4.10.0/dist/tf-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4.10.0/dist/tf-converter.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.10.0/dist/tf-backend-webgl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
+<!-- MediaPipe runtime for BlazePose -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" crossorigin="anonymous"></script>
+
+<script>
+// ── PARTICLES ──
+(function(){
+  const c=document.getElementById('pc'),ctx=c.getContext('2d');
+  let W,H;
+  const resize=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight};
+  resize();window.addEventListener('resize',resize);
+  const pts=Array.from({length:60},()=>({x:Math.random()*1600,y:Math.random()*1000,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18,r:Math.random()*1.4+.3,o:Math.random()*.4+.08}));
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fillStyle=`rgba(0,212,176,${p.o})`;ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+      if(d<110){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(0,212,176,${.055*(1-d/110)})`;ctx.lineWidth=.5;ctx.stroke();}
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// ── NAV / MISC ──
+const LOCS=['Lübeck','Mölln','Schwarzenbek'];
+let locIdx=0;
+function cycleLoc(){locIdx=(locIdx+1)%LOCS.length;document.getElementById('locPill').textContent=LOCS[locIdx];showToast('Standort: '+LOCS[locIdx]);}
+function navTo(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nb=document.getElementById('nav-'+p);if(nb)nb.classList.add('on');
+  if(p==='analyse')goStep(1);
+}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ── WIZARD ──
+let curType='lateral';
+function selType(t){curType=t;['lateral','frontal','treppe'].forEach(id=>{const el=document.getElementById('at-'+id);if(el)el.classList.toggle('sel',id===t);});}
+function goStep(n){
+  [1,2,3].forEach(i=>{const el=document.getElementById('step'+i);if(el)el.style.display=i===n?'block':'none';});
+  if(n===3){
+    document.getElementById('s3pat').textContent=((document.getElementById('fvn').value||'')+' '+(document.getElementById('fnn').value||'')).trim()||'–';
+    document.getElementById('s3type').textContent=curType==='lateral'?'Lateral 3D':curType==='frontal'?'Frontal 3D':'Treppensteigen 3D';
+    document.getElementById('s3loc').textContent=LOCS[locIdx];
+  }
+  document.getElementById('page-analyse').scrollTop=0;
+}
+
+// ── PATIENTS ──
+const PATS=[
+  {id:'anne',init:'AM',name:'Anne Meier',sub:'Geb. 04.12.1979 · Lateral 3D · 75 LM',col:'linear-gradient(135deg,#00d4b0,#007a65)',sym:'86%',bc:'b-warn'},
+  {id:'peter',init:'PK',name:'Peter Klein',sub:'Geb. 15.03.1965 · Frontal 3D · 75 LM',col:'linear-gradient(135deg,#ff8c42,#c05a00)',sym:'71%',bc:'b-bad'},
+  {id:'maria',init:'MS',name:'Maria Schmidt',sub:'Geb. 22.07.1990 · Treppe 3D',col:'linear-gradient(135deg,#4cc9f0,#1a6fb5)',sym:'91%',bc:'b-ok'},
+  {id:'thomas',init:'TW',name:'Thomas Weber',sub:'Geb. 08.11.1975 · Lateral 3D',col:'linear-gradient(135deg,#7bed9f,#1e6634)',sym:'89%',bc:'b-ok'},
+  {id:'sabine',init:'SB',name:'Sabine Bauer',sub:'Geb. 30.05.1982 · Lateral 3D',col:'linear-gradient(135deg,#ffd6a5,#c05a00)',sym:'78%',bc:'b-warn'},
+];
+function renderP(list){document.getElementById('plist').innerHTML=list.map(p=>`<div class="pat-item" onclick="openReport('${p.id}')"><div class="pat-av" style="background:${p.col}">${p.init}</div><div class="pat-info"><div class="pat-name">${p.name}</div><div class="pat-sub">${p.sub}</div></div><div class="badge ${p.bc}" style="margin-right:6px">${p.sym}</div><div class="chevron"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div></div>`).join('');}
+renderP(PATS);
+function filterP(q){renderP(PATS.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())));}
+
+// ─────────────────────────────────────────────────────
+// ── ELITE CAMERA: TF.js BlazePose GHUM Heavy ──
+// ─────────────────────────────────────────────────────
+let camStream=null,face='environment',detector=null,animId=null;
+let isRec=false,recStart=0,recTmr=null;
+let frames=[],stepCnt=0,stepTimes=[],symSamples=[],lastKneeState=null;
+let pelvisSamples=[],spineSamples=[],trunkSamples=[];
+// Kalman state per landmark
+let kalman={};
+
+// ── KALMAN FILTER (1D per coordinate) ──
+function kalmanUpdate(key, measured, R=0.04, Q=0.001){
+  if(!kalman[key]){kalman[key]={x:measured,P:1};}
+  const k=kalman[key];
+  k.P=k.P+Q;
+  const K=k.P/(k.P+R);
+  k.x=k.x+K*(measured-k.x);
+  k.P=(1-K)*k.P;
+  return k.x;
+}
+function smoothLM(lm,idx,axis){
+  const key=`${idx}_${axis}`;
+  return kalmanUpdate(key,lm[idx][axis]||0);
+}
+
+// ── ANGLE 3D ──
+function ang3D(a,b,c){
+  const AB={x:a.x-b.x,y:a.y-b.y,z:(a.z||0)-(b.z||0)};
+  const CB={x:c.x-b.x,y:c.y-b.y,z:(c.z||0)-(b.z||0)};
+  const dot=AB.x*CB.x+AB.y*CB.y+AB.z*CB.z;
+  const mag=Math.sqrt(AB.x**2+AB.y**2+AB.z**2)*Math.sqrt(CB.x**2+CB.y**2+CB.z**2);
+  return mag===0?0:Math.round(Math.acos(Math.max(-1,Math.min(1,dot/mag)))*180/Math.PI);
+}
+
+// ── STEP DETECTION (velocity-based) ──
+let prevKneeL=null;
+function detectStep(kL,kR){
+  const avg=(kL+kR)/2;
+  const state=avg<145?'f':avg>162?'e':null;
+  if(state&&state!==lastKneeState){
+    if(state==='f'&&lastKneeState==='e'){
+      stepCnt++;stepTimes.push(Date.now());
+      document.getElementById('csSteps').textContent=stepCnt;
+      if(stepTimes.length>=4){const r=stepTimes.slice(-8);document.getElementById('csCad').textContent=Math.round((r.length-1)/((r[r.length-1]-r[0])/1000)*60);}
+    }
+    lastKneeState=state;
+  }
+}
+
+// ── BIOMECHANICS ──
+function calcPelvicTilt(lm){
+  // Angle of line connecting left hip (23) and right hip (24) vs horizontal
+  const lh=lm[23],rh=lm[24];
+  if(!lh||!rh)return 0;
+  const dx=rh.x-lh.x,dy=rh.y-lh.y;
+  return Math.round(Math.atan2(dy,dx)*180/Math.PI);
+}
+function calcSpineLateral(lm){
+  // Mid-hip to mid-shoulder angle vs vertical
+  const lh=lm[23],rh=lm[24],ls=lm[11],rs=lm[12];
+  if(!lh||!rh||!ls||!rs)return 0;
+  const midHipX=(lh.x+rh.x)/2,midHipY=(lh.y+rh.y)/2;
+  const midShX=(ls.x+rs.x)/2,midShY=(ls.y+rs.y)/2;
+  const dx=midShX-midHipX,dy=midShY-midHipY;
+  return Math.round(Math.atan2(dx,Math.abs(dy))*180/Math.PI);
+}
+function calcTrunkLean(lm){
+  // Trunk inclination sagittal (Z difference shoulder vs hip)
+  const lh=lm[23],rh=lm[24],ls=lm[11],rs=lm[12];
+  if(!lh||!rh||!ls||!rs)return 0;
+  const midHz=(lh.z||0+rh.z||0)/2;
+  const midSz=(ls.z||0+rs.z||0)/2;
+  return Math.round((midSz-midHz)*100);
+}
+
+// ── OPEN CAMERA ──
+function openCam(){
+  document.getElementById('camTitle').textContent='3D · '+document.getElementById('s3type').textContent.toUpperCase();
+  document.getElementById('camScreen').classList.add('open');
+  startCam();
+}
+function closeCam(){
+  stopRecClean();
+  document.getElementById('camScreen').classList.remove('open');
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+}
+function flipCam(){face=face==='environment'?'user':'environment';if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}if(animId){cancelAnimationFrame(animId);animId=null;}startCam();}
+
+async function startCam(){
+  const v=document.getElementById('camVideo');
+  setHint('Kamera wird gestartet…',false,false);
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:face,width:{ideal:1280},height:{ideal:720}},audio:false});
+    v.srcObject=camStream;await v.play();
+    v.onloadedmetadata=()=>{const c=document.getElementById('poseCanvas');c.width=v.videoWidth;c.height=v.videoHeight;};
+    setHint('BlazePose GHUM Heavy lädt…',false,false);
+    await loadDetector();
+    runLoop();
+  }catch(e){
+    setHint('⚠ Kamerazugriff verweigert',false,false);
+    showToast('Bitte Kamera-Berechtigung erteilen');
+  }
+}
+
+async function loadDetector(){
+  try{
+    // Try TF.js BlazePose GHUM Heavy first
+    await tf.setBackend('webgl');
+    await tf.ready();
+    detector=await poseDetection.createDetector(poseDetection.SupportedModels.BlazePose,{
+      runtime:'tfjs',
+      modelType:'heavy',  // maximum accuracy
+      enableSmoothing:false,  // we do our own Kalman
+      enableSegmentation:false,
+    });
+    setHint('BlazePose GHUM Heavy bereit ✓',false,true);
+    document.getElementById('lmCounter').style.display='flex';
+  }catch(e){
+    // Fallback to MediaPipe runtime
+    try{
+      detector=await poseDetection.createDetector(poseDetection.SupportedModels.BlazePose,{
+        runtime:'mediapipe',
+        modelType:'heavy',
+        solutionPath:'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404',
+        enableSmoothing:false,
+      });
+      setHint('BlazePose Heavy (MP) bereit ✓',false,true);
+      document.getElementById('lmCounter').style.display='flex';
+    }catch(e2){
+      setHint('⚠ Modell-Ladefehler – Legacy-Modus',false,false);
+      detector=null;
+      // Fallback: use MediaPipe legacy Pose
+      initLegacyPose();
+    }
+  }
+}
+
+function setHint(msg,rec,ready){
+  const el=document.getElementById('camHint');
+  el.textContent=msg;
+  el.className='hint-pill'+(rec?' rec':ready?' ready':'');
+}
+
+// ── MAIN RENDER LOOP ──
+async function runLoop(){
+  const v=document.getElementById('camVideo');
+  const canvas=document.getElementById('poseCanvas');
+  const ctx=canvas.getContext('2d');
+  if(!detector||v.paused||v.ended){animId=requestAnimationFrame(runLoop);return;}
+
+  let poses=[];
+  try{poses=await detector.estimatePoses(v,{flipHorizontal:face==='user'});}catch(e){animId=requestAnimationFrame(runLoop);return;}
+
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  canvas.width=W;canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+
+  if(!poses||!poses.length){setHint('Person suchen…',false,false);animId=requestAnimationFrame(runLoop);return;}
+
+  const pose=poses[0];
+  const kp=pose.keypoints;
+  const kp3=pose.keypoints3D||null;
+
+  // Apply Kalman smoothing to 2D
+  const skp=kp.map((p,i)=>({
+    x:smoothLM(kp,i,'x')*W,
+    y:smoothLM(kp,i,'y')*H,
+    z:kp3?kalmanUpdate('3d_'+i,kp3[i]?.z||0):0,
+    score:p.score||0
+  }));
+
+  // Count visible landmarks
+  const vis=skp.filter(p=>p.score>.4).length;
+  document.getElementById('lmTxt').textContent=vis+' / 33 Landmarks sichtbar';
+
+  setHint(isRec?'● 3D-AUFNAHME':'Person erkannt – Messung starten',isRec,!isRec);
+
+  // ── DRAW SKELETON ──
+  const CONN=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[27,31],[24,26],[26,28],[28,30],[28,32]];
+  const lw=Math.max(2.2,W/170);
+  CONN.forEach(([a,b])=>{
+    if(skp[a].score<.35||skp[b].score<.35)return;
+    // Color by Z-depth
+    const zAvg=(skp[a].z+skp[b].z)/2;
+    const zNorm=Math.max(0,Math.min(1,(zAvg+0.5)));
+    const r=Math.round(zNorm*30),g=Math.round(80+zNorm*130),bl=Math.round(150+zNorm*60);
+    ctx.beginPath();ctx.moveTo(skp[a].x,skp[a].y);ctx.lineTo(skp[b].x,skp[b].y);
+    ctx.strokeStyle=`rgba(0,212,176,0.75)`;ctx.lineWidth=lw;ctx.stroke();
+  });
+
+  // Joint dots with Z-encoded size
+  skp.forEach((p,i)=>{
+    if(p.score<.35)return;
+    const isKnee=[25,26].includes(i),isHip=[23,24].includes(i),isAnkle=[27,28].includes(i);
+    const baseR=Math.max(4,W/130);
+    const zScale=1+Math.max(0,(-p.z)*0.8);
+    const r=baseR*zScale;
+    if(isKnee||isHip||isAnkle){
+      const g2=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*3);
+      const c=isKnee?'255,140,66':isHip?'0,212,176':'240,192,64';
+      g2.addColorStop(0,`rgba(${c},.45)`);g2.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(p.x,p.y,r*3,0,2*Math.PI);ctx.fillStyle=g2;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,2*Math.PI);
+    ctx.fillStyle=isKnee?'rgba(255,140,66,.9)':isHip?'rgba(0,212,176,.9)':'rgba(224,244,241,.85)';
+    ctx.fill();
+  });
+
+  // ── CALC ANGLES (3D-aware) ──
+  function pt3(i){return{x:skp[i].x,y:skp[i].y,z:kp3?kalmanUpdate('3dz_'+i,kp3[i]?.z||0):0};}
+  const hipL=ang3D(pt3(11),pt3(23),pt3(25));
+  const hipR=ang3D(pt3(12),pt3(24),pt3(26));
+  const kneeL=ang3D(pt3(23),pt3(25),pt3(27));
+  const kneeR=ang3D(pt3(24),pt3(26),pt3(28));
+  const ankleL=ang3D(pt3(25),pt3(27),pt3(31));
+  const ankleR=ang3D(pt3(26),pt3(28),pt3(32));
+
+  document.getElementById('apHip').textContent=Math.round((hipL+hipR)/2)+'°';
+  document.getElementById('apKnee').textContent=Math.round((kneeL+kneeR)/2)+'°';
+  document.getElementById('apAnkle').textContent=Math.round((ankleL+ankleR)/2)+'°';
+  if(kp3)document.getElementById('apZ').textContent=(kp3[23]?.z||0).toFixed(2)+'m';
+
+  // Biomechanics (pixel coords)
+  const rawKp=kp.map((p,i)=>({x:p.x,y:p.y,z:kp3?kp3[i]?.z||0:0}));
+  const pelvis=calcPelvicTilt(rawKp);
+  const spine=calcSpineLateral(rawKp);
+  const trunk=calcTrunkLean(rawKp);
+  pelvisSamples.push(pelvis);spineSamples.push(spine);trunkSamples.push(trunk);
+  document.getElementById('d3Pelvis').textContent=pelvis+'°';
+  document.getElementById('d3Spine').textContent=spine+'°';
+  document.getElementById('d3Shoulder').textContent=(()=>{const ls=rawKp[11],rs=rawKp[12];if(!ls||!rs)return'–°';return Math.round(Math.atan2(rs.y-ls.y,rs.x-ls.x)*180/Math.PI)+'°';})();
+  document.getElementById('bioPelvis').textContent=Math.abs(pelvis)+'°';
+  document.getElementById('bioSpine').textContent=Math.abs(spine)+'°';
+  document.getElementById('bioTrunk').textContent=Math.abs(trunk)+'cm';
+
+  // Symmetry & steps
+  const symK=100-Math.abs(kneeL-kneeR)/Math.max(kneeL,kneeR,1)*100;
+  const symH=100-Math.abs(hipL-hipR)/Math.max(hipL,hipR,1)*100;
+  const sym=Math.round((symK+symH)/2);
+  document.getElementById('csSym').textContent=sym+'%';
+  symSamples.push(sym);
+  detectStep(kneeL,kneeR);
+
+  if(isRec){
+    frames.push({hipL,hipR,kneeL,kneeR,ankleL,ankleR,pelvis,spine,ts:Date.now(),kp3:kp3?kp3.map(p=>({x:p.x,y:p.y,z:p.z})):null});
+    document.getElementById('camPb').style.width=Math.min((Date.now()-recStart)/30000*100,100)+'%';
+  }
+
+  animId=requestAnimationFrame(runLoop);
+}
+
+// ── LEGACY FALLBACK ──
+let legacyPose=null,legacyCam=null;
+function initLegacyPose(){
+  const v=document.getElementById('camVideo');
+  legacyPose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${f}`});
+  legacyPose.setOptions({modelComplexity:2,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});
+  legacyPose.onResults(r=>{
+    if(!r.poseLandmarks)return;
+    const lm=r.poseLandmarks;
+    const W=window.innerWidth,H=window.innerHeight*.7;
+    // minimal draw + angles
+    const kp=lm.map(p=>({x:p.x,y:p.y,z:0,score:p.visibility||0}));
+    const ang=(a,b,c)=>ang3D(a,b,c);
+    const pt=i=>({x:kp[i].x*W,y:kp[i].y*H,z:0});
+    const kL=ang(pt(23),pt(25),pt(27)),kR=ang(pt(24),pt(26),pt(28));
+    document.getElementById('apKnee').textContent=Math.round((kL+kR)/2)+'°';
+    detectStep(kL,kR);
+    const sym=Math.round(100-Math.abs(kL-kR)/Math.max(kL,kR,1)*100);
+    symSamples.push(sym);
+    document.getElementById('csSym').textContent=sym+'%';
+    const canvas=document.getElementById('poseCanvas');
+    const ctx=canvas.getContext('2d');
+    canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const CONN=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[27,31],[24,26],[26,28],[28,30],[28,32]];
+    CONN.forEach(([a,b])=>{
+      if((lm[a].visibility||0)<.35||(lm[b].visibility||0)<.35)return;
+      ctx.beginPath();ctx.moveTo(lm[a].x*canvas.width,lm[a].y*canvas.height);ctx.lineTo(lm[b].x*canvas.width,lm[b].y*canvas.height);
+      ctx.strokeStyle='rgba(0,212,176,.7)';ctx.lineWidth=2.5;ctx.stroke();
+    });
+    lm.forEach((p,i)=>{
+      if((p.visibility||0)<.35)return;
+      const r=Math.max(4.5,canvas.width/130);
+      ctx.beginPath();ctx.arc(p.x*canvas.width,p.y*canvas.height,r,0,2*Math.PI);
+      ctx.fillStyle=[25,26].includes(i)?'rgba(255,140,66,.9)':'rgba(0,212,176,.85)';ctx.fill();
+    });
+    if(isRec)frames.push({hipL:ang(pt(11),pt(23),pt(25)),hipR:ang(pt(12),pt(24),pt(26)),kneeL:kL,kneeR:kR,ankleL:ang(pt(25),pt(27),pt(31)),ankleR:ang(pt(26),pt(28),pt(32)),pelvis:0,spine:0,ts:Date.now(),kp3:null});
+    setHint(isRec?'● AUFNAHME (Legacy)':'Erkannt (Legacy-Modus)',isRec,!isRec);
+  });
+  legacyCam=new Camera(v,{onFrame:async()=>{await legacyPose.send({image:v});},width:1280,height:720});
+  legacyCam.start();
+}
+
+// ── RECORDING ──
+function toggleRec(){isRec?stopRec():startRec();}
+function startRec(){
+  isRec=true;recStart=Date.now();
+  frames=[];stepCnt=0;stepTimes=[];symSamples=[];pelvisSamples=[];spineSamples=[];trunkSamples=[];lastKneeState=null;kalman={};
+  document.getElementById('csSteps').textContent='0';document.getElementById('csCad').textContent='–';document.getElementById('camPb').style.width='0%';
+  const btn=document.getElementById('recBtn');btn.classList.add('rec');btn.innerHTML='<div class="rdot"></div> Messung beenden';
+  recTmr=setInterval(()=>document.getElementById('csTime').textContent=Math.round((Date.now()-recStart)/1000)+'s',500);
+}
+function stopRec(){
+  stopRecClean();
+  const avgSym=symSamples.length?Math.round(symSamples.reduce((a,b)=>a+b)/symSamples.length):86;
+  const avgPelvis=pelvisSamples.length?Math.round(pelvisSamples.reduce((a,b)=>a+Math.abs(b))/pelvisSamples.length):3;
+  const avgSpine=spineSamples.length?Math.round(spineSamples.reduce((a,b)=>a+Math.abs(b))/spineSamples.length):2;
+  const elapsed=(Date.now()-recStart)/1000;
+  const cad=stepTimes.length>=2?Math.round(stepTimes.length/((stepTimes[stepTimes.length-1]-stepTimes[0])/1000)*60):71;
+  const speed=stepCnt>0?+(stepCnt*0.62/elapsed*3.6).toFixed(1):2.5;
+  const score3d=Math.round(Math.min(100,(avgSym*.6+(cad>=90?20:cad>=70?12:5)+(avgPelvis<5?15:avgPelvis<10?8:2)+(avgSpine<3?5:2))));
+  const d={
+    name:((document.getElementById('fvn').value||'Patient')+' '+(document.getElementById('fnn').value||'')).trim(),
+    meta:'Größe: '+(document.getElementById('fgr').value||'–')+' cm · '+document.getElementById('fsex').value+(document.getElementById('fdiag').value?' · '+document.getElementById('fdiag').value:''),
+    type:document.getElementById('s3type').textContent,
+    steps:stepCnt,sym:avgSym,speed,cad,pelvis:avgPelvis,spine:avgSpine,score3d,
+    hip:phaseVals('hipL'),knee:phaseVals('kneeL'),ankle:phaseVals('ankleL'),pelvisPhase:phaseVals('pelvis'),
+    rawFrames:frames
+  };
+  closeCam();
+  setTimeout(()=>{buildReport(d);document.getElementById('subReport').classList.add('open');navTo('home');bumpStats(avgSym,stepCnt);},300);
+}
+function stopRecClean(){
+  isRec=false;clearInterval(recTmr);
+  const btn=document.getElementById('recBtn');btn.classList.remove('rec');
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="#fff" stroke="none"/></svg> Messung starten';
+}
+function phaseVals(key){
+  if(!frames.length)return key==='hipL'?[22,15,9,15,11,14,22,22]:key==='kneeL'?[4,10,5,20,31,41,19,2]:key==='pelvis'?[2,3,2,4,3,2,3,2]:[5,10,6,12,11,6,0,3];
+  const seg=Math.ceil(frames.length/8);
+  return Array.from({length:8},(_,i)=>{
+    const sl=frames.slice(i*seg,(i+1)*seg);
+    if(!sl.length)return 0;
+    if(key==='pelvis')return Math.round(sl.reduce((s,f)=>s+Math.abs(f.pelvis||0),0)/sl.length);
+    return Math.round(180-sl.reduce((s,f)=>s+(f[key]||0),0)/sl.length);
+  });
+}
+function bumpStats(sym,steps){document.getElementById('stat-s').textContent=sym+'%';document.getElementById('stat-st').textContent=steps;document.getElementById('stat-a').textContent=parseInt(document.getElementById('stat-a').textContent)+1;}
+
+// ── EXPORT ──
+let currentReportData=null;
+function exportJSON(){
+  if(!currentReportData){showToast('Kein Report geladen');return;}
+  const blob=new Blob([JSON.stringify(currentReportData,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ganganalyse_'+Date.now()+'.json';a.click();showToast('JSON exportiert');
+}
+function exportCSV(){
+  if(!currentReportData){showToast('Kein Report geladen');return;}
+  const d=currentReportData;
+  const rows=[['Parameter','Wert'],['Name',d.name],['Symmetrie',d.sym+'%'],['Geschwindigkeit',d.speed+' km/h'],['Kadenz',d.cad+' Scp/min'],['Schritte',d.steps],['Beckenneigung',d.pelvis+'°'],['Wirbelsäule lateral',d.spine+'°'],['3D-Score',d.score3d+'/100']];
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ganganalyse_'+Date.now()+'.csv';a.click();showToast('CSV exportiert');
+}
+
+// ── REPORT DATA ──
+const DR={
+  anne:{name:'Anne Meier',meta:'Geb.: 04.12.1979 · 175 cm · Weiblich · Pat.-Nr.: 570ee4 · Kniearthrose li.',type:'Ganganalyse Lateral 3D',steps:22,sym:86,speed:2.5,cad:71,pelvis:4,spine:3,score3d:72,hip:[22,15,9,15,11,14,22,22],knee:[4,10,5,20,31,41,19,2],ankle:[5,10,6,12,11,6,0,3],pelvisPhase:[2,4,3,5,3,2,3,2]},
+  peter:{name:'Peter Klein',meta:'Geb.: 15.03.1965 · 182 cm · Männlich · Pat.-Nr.: 228ac1 · Hüft-TEP re.',type:'Ganganalyse Frontal 3D',steps:18,sym:71,speed:1.9,cad:62,pelvis:8,spine:6,score3d:55,hip:[20,12,7,18,9,11,19,18],knee:[3,8,4,22,35,44,20,3],ankle:[4,8,5,14,10,5,1,2],pelvisPhase:[5,8,6,9,7,5,6,5]},
+  maria:{name:'Maria Schmidt',meta:'Geb.: 22.07.1990 · 168 cm · Weiblich · Pat.-Nr.: 391bf7 · VKB-Reha re.',type:'Treppensteigen 3D',steps:24,sym:91,speed:2.8,cad:88,pelvis:2,spine:2,score3d:88,hip:[18,12,8,14,10,13,20,19],knee:[5,12,6,18,28,38,16,4],ankle:[6,9,5,10,9,5,1,3],pelvisPhase:[2,2,2,3,2,1,2,2]},
+};
+
+function openReport(id){const d=DR[id]||DR.anne;currentReportData=d;buildReport(d);document.getElementById('subReport').classList.add('open');}
+function closeReport(){document.getElementById('subReport').classList.remove('open');}
+
+function buildReport(d){
+  currentReportData=d;
+  document.getElementById('rhName').textContent=d.name||'–';
+  document.getElementById('rhMeta').textContent=d.meta||'';
+  document.getElementById('rhType').textContent=d.type||'Ganganalyse';
+  document.getElementById('rhLoc').textContent='Gesundheitsreich '+LOCS[locIdx];
+
+  document.getElementById('scSym').textContent=d.sym+'%';
+  document.getElementById('scSpeed').textContent=d.speed;
+  document.getElementById('scCad').textContent=d.cad;
+  document.getElementById('scPelvis').textContent=d.pelvis+'°';
+  document.getElementById('scSpine').textContent=d.spine+'°';
+  document.getElementById('sc3d').textContent=d.score3d;
+
+  // 3D axes (mock based on report)
+  document.getElementById('ax-x').textContent=(d.pelvis*.01).toFixed(2)+'m';
+  document.getElementById('ax-y').textContent=(-0.12).toFixed(2)+'m';
+  document.getElementById('ax-z').textContent=(0.05+d.spine*.01).toFixed(2)+'m';
+
+  // Param table
+  const sc=v=>v>=90?'vok':v>=80?'vwarn':'vbad';
+  const ib=v=>v>=90?'iok':v>=80?'iwarn':'ibad';
+  const cc=v=>v>=90?'vok':v>=70?'vwarn':'vbad';
+  const ci=v=>v>=90?'iok':v>=70?'iwarn':'ibad';
+  document.getElementById('ptbody').innerHTML=`
+    <tr><td>Schrittanzahl</td><td>${d.steps}</td><td>–</td><td><span class="ib iok">✓</span></td></tr>
+    <tr><td>Gangsymmetrie</td><td class="${sc(d.sym)}">${d.sym}%</td><td>&gt;90%</td><td><span class="ib ${ib(d.sym)}">${d.sym>=90?'Normal':d.sym>=80?'Achtung':'Auffällig'}</span></td></tr>
+    <tr><td>Geschwindigkeit</td><td>${d.speed} km/h</td><td>2–5 km/h</td><td><span class="ib iok">✓</span></td></tr>
+    <tr><td>Kadenz</td><td class="${cc(d.cad)}">${d.cad} Scp/min</td><td>90–115</td><td><span class="ib ${ci(d.cad)}">${d.cad>=90?'Normal':d.cad>=70?'Niedrig':'Sehr niedrig'}</span></td></tr>
+    <tr><td>Beckenneigung (3D)</td><td class="${d.pelvis<=5?'vok':d.pelvis<=10?'vwarn':'vbad'}">${d.pelvis}°</td><td>&lt;5°</td><td><span class="ib ${d.pelvis<=5?'iok':d.pelvis<=10?'iwarn':'ibad'}">${d.pelvis<=5?'Normal':d.pelvis<=10?'Erhöht':'Stark erhöht'}</span></td></tr>
+    <tr><td>Wirbelsäule lateral (3D)</td><td class="${d.spine<=3?'vok':d.spine<=7?'vwarn':'vbad'}">${d.spine}°</td><td>&lt;3°</td><td><span class="ib ${d.spine<=3?'iok':d.spine<=7?'iwarn':'ibad'}">${d.spine<=3?'Normal':d.spine<=7?'Leicht':' Auffällig'}</span></td></tr>
+    <tr><td>3D-Gesamtscore</td><td class="${d.score3d>=80?'vok':d.score3d>=65?'vwarn':'vbad'}">${d.score3d}/100</td><td>&gt;80</td><td><span class="ib ${d.score3d>=80?'iok':d.score3d>=65?'iwarn':'ibad'}">${d.score3d>=80?'Gut':d.score3d>=65?'Mittel':'Auffällig'}</span></td></tr>
+  `;
+  buildPhases(d.hip,d.knee,d.ankle,d.pelvisPhase);
+  buildChart(d.knee);
+}
+
+// PHASE NAMES + FIGURES
+const PN=['Initialer\nKontakt','Belastungs-\naufnahme','Mittlere\nStandphase','Terminale\nStandphase','Vor-\nschwung','Initiale\nSchwung','Mittlere\nSchwung','Terminale\nSchwung'];
+const PP=['M18,4 a3,3 0 1,0 0.01,0 M18,7 l0,12 M18,13 l-5,4 M18,19 l-3,9 l-3,2 M18,19 l3,8 l3,3','M18,4 a3,3 0 1,0 0.01,0 M18,7 l-1,13 M17,13 l-5,4 M17,20 l-3,9 l-3,2 M17,20 l3,8 l3,3','M18,4 a3,3 0 1,0 0.01,0 M18,7 l0,13 M18,13 l5,4 M18,20 l-2,10 l-2,2 M18,20 l2,9 l3,2','M20,4 a3,3 0 1,0 0.01,0 M20,7 l-1,13 M19,13 l5,4 M19,20 l-4,10 l-3,2 M19,20 l3,9 l4,2','M18,4 a3,3 0 1,0 0.01,0 M18,7 l-1,12 M17,13 l5,4 M17,19 l-3,10 l-3,2 M17,19 l4,8 l5,5','M18,4 a3,3 0 1,0 0.01,0 M18,7 l0,12 M18,13 l-6,3 M18,19 l-2,9 l-2,3 M18,19 l2,8 l0,6','M18,4 a3,3 0 1,0 0.01,0 M18,7 l0,12 M18,13 l-5,3 M18,19 l-2,9 l-2,4 M18,19 l3,7 l2,6','M18,4 a3,3 0 1,0 0.01,0 M18,7 l1,13 M19,13 l-6,4 M19,20 l-2,9 l-2,3 M19,20 l3,8 l3,4'];
+
+function buildPhases(hip,knee,ankle,pelvis){
+  document.getElementById('gpTrack').innerHTML=PN.map((n,i)=>{
+    const kv=knee[i]||0,hl=kv>35||kv<0;
+    return `<div class="gp-ph ${hl?'hl':''}"><div class="gp-num">${i+1}</div><div class="gp-fig"><svg viewBox="0 0 36 36" fill="none" stroke="${hl?'#ff8c42':'#00d4b0'}" stroke-width="1.8" stroke-linecap="round"><path d="${PP[i]}"/></svg></div><div class="gp-name">${n.replace('\n','<br>')}</div><div class="gp-deg">${kv}°</div></div>`;
+  }).join('');
+  function bars(id,vals,col=''){
+    const mx=Math.max(...vals,1);
+    document.getElementById(id).innerHTML=vals.map(v=>{
+      const p=Math.abs(v)/mx*100,cl=col||( v>35?'w':v<0?'b':'');
+      return `<div class="jbc"><div class="jb"><div class="jbf ${cl}" style="width:${p}%"></div></div><div class="jbv">${v}°</div></div>`;
+    }).join('');
+  }
+  bars('jbHip',hip);bars('jbKnee',knee);bars('jbAnkle',ankle);bars('jbPelvis',pelvis||[2,3,2,4,3,2,3,2],'');
+}
+
+function buildChart(vals){
+  const ox=32,oy=98,cw=268,ch=90;
+  // Norm curve (healthy gait knee flexion reference)
+  const norm=[5,15,8,0,35,60,25,5];
+  const pts=vals.map((v,i)=>({x:ox+i/(vals.length-1)*cw,y:oy-v/65*ch}));
+  const ptsR=pts.map(p=>({x:p.x,y:p.y+6}));
+  const normPts=norm.map((v,i)=>({x:ox+i/(norm.length-1)*cw,y:oy-v/65*ch}));
+  function toPath(arr){
+    let d=`M${arr[0].x},${arr[0].y}`;
+    for(let i=1;i<arr.length;i++){const cp1={x:(arr[i-1].x+arr[i].x)/2,y:arr[i-1].y},cp2={x:(arr[i-1].x+arr[i].x)/2,y:arr[i].y};d+=` C${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${arr[i].x},${arr[i].y}`;}
+    return d;
+  }
+  const p=toPath(pts);
+  document.getElementById('kcL').setAttribute('d',p);
+  document.getElementById('kcR').setAttribute('d',toPath(ptsR));
+  document.getElementById('kcRef').setAttribute('d',toPath(normPts));
+  document.getElementById('kcFill').setAttribute('d',p+` L${pts[pts.length-1].x},${oy} L${pts[0].x},${oy} Z`);
+  document.getElementById('kcFill2').setAttribute('d',toPath(normPts)+` L${normPts[normPts.length-1].x},${oy} L${normPts[0].x},${oy} Z`);
+}
+
+// INIT
+buildReport(DR.anne);
+document.getElementById('subReport').classList.remove('open');
+</script>
+</body>
+</html>
