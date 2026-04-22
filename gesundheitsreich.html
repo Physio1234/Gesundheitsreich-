@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0e1117">
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script>
+// ═══════════════════════════════════════════════════════════
+//  GESUNDHEITSREICH — v2.0
+//  React · Firebase Realtime DB · PIN-Auth · Mobile-First
+// ═══════════════════════════════════════════════════════════
+
+const {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef
+} = React;
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const FB_CONFIG = {
+  apiKey: "AIzaSyDvjC7JQmXymkaBDAjmp3qUKdP6JCCTKwk",
+  authDomain: "gesundheitsreich-app.firebaseapp.com",
+  databaseURL: "https://gesundheitsreich-app-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "gesundheitsreich-app",
+  storageBucket: "gesundheitsreich-app.firebasestorage.app",
+  messagingSenderId: "784132967765",
+  appId: "1:784132967765:web:ba53c255afe14464fdb3dc"
+};
+const DB_URL = FB_CONFIG.databaseURL;
+const FB_TOKEN_KEY = "gr_fb_token";
+
+// ── CLOUDFLARE WORKER (OpenAI Proxy) ─────────────────────────
+const WORKER_URL = "https://odd-mountain-6332.workers.dev";
+
+// ── STAMMDATEN ───────────────────────────────────────────────
+const STANDORTE = ["Lübeck", "Mölln", "Schwarzenbek"];
+const MITARBEITER = [{
+  id: "tobias_patzer",
+  name: "Tobias Patzer",
+  h: 40,
+  gehalt: 5000,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "admin",
+  geb: "15.09.1975",
+  provSatz: null
+}, {
+  id: "vanessa_patzer",
+  name: "Vanessa Patzer",
+  h: 40,
+  gehalt: 5000,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "admin",
+  geb: "01.06.1994",
+  provSatz: null
+}, {
+  id: "tim_ohldag",
+  name: "Tim Arthur Ohldag",
+  h: 44,
+  gehalt: 6000,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "07.08.2000",
+  provSatz: null
+}, {
+  id: "till_staeding",
+  name: "Till Städing",
+  h: 40,
+  gehalt: 3600,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "25.05.2000",
+  provSatz: null
+}, {
+  id: "jean_blechschmidt",
+  name: "Jean-Michel Blechschmidt",
+  h: 40,
+  gehalt: 5000,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "14.12.1994",
+  provSatz: null
+}, {
+  id: "katja_krause",
+  name: "Katja Krause",
+  h: 35,
+  gehalt: 3450,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "13.10.1985",
+  provSatz: null
+}, {
+  id: "oliver_bebensee",
+  name: "Oliver Bebensee",
+  h: 40,
+  gehalt: 5000,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "24.02.1990",
+  provSatz: null
+}, {
+  id: "tony_hazeem",
+  name: "Tony Hazeem",
+  h: 40,
+  gehalt: 4000,
+  standort: "Mölln",
+  fw: true,
+  pin: "0000",
+  rolle: "ma",
+  geb: "17.04.1994",
+  provSatz: null
+}, {
+  id: "wenke_siewert",
+  name: "Wenke Siewert",
+  h: 30,
+  gehalt: 2700,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "21.06.1995",
+  provSatz: null
+}, {
+  id: "moritz_bruns",
+  name: "Moritz Bruns",
+  h: 40,
+  gehalt: 3500,
+  standort: "Schwarzenbek",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "20.04.2001",
+  provSatz: null
+}, {
+  id: "myriam_brauner",
+  name: "Myriam Brauner",
+  h: 30,
+  gehalt: 2800,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "27.03.1986",
+  provSatz: null
+}, {
+  id: "lewis_vieth",
+  name: "Lewis Vieth",
+  h: 32,
+  gehalt: 2640,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "05.10.2000",
+  provSatz: null
+}, {
+  id: "rita_fritz",
+  name: "Rita Fritz",
+  h: 37,
+  gehalt: 3500,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "21.10.1970",
+  provSatz: null
+}, {
+  id: "katrin_mesfeldt",
+  name: "Katrin Meßfeldt",
+  h: 25,
+  gehalt: 2500,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "20.04.1985",
+  provSatz: null
+}, {
+  id: "susanne_michelau",
+  name: "Susanne Michelau",
+  h: 15,
+  gehalt: 1500,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "27.02.1985",
+  provSatz: null
+}, {
+  id: "lea_schewski",
+  name: "Lea Schewski",
+  h: 40,
+  gehalt: 3900,
+  standort: "Lübeck",
+  fw: true,
+  pin: "0000",
+  rolle: "ma",
+  geb: "12.10.2002",
+  provSatz: null
+}, {
+  id: "robin_jedtberg",
+  name: "Robin Jedtberg",
+  h: 37,
+  gehalt: 3700,
+  standort: "Schwarzenbek",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "03.07.2000",
+  provSatz: null
+}, {
+  id: "marcel_joppeck",
+  name: "Marcel Joppeck",
+  h: 40,
+  gehalt: 3600,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "14.06.1999",
+  provSatz: null
+}, {
+  id: "maja_oberst",
+  name: "Maja Oberst",
+  h: 35,
+  gehalt: 3400,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "05.10.2004",
+  provSatz: null
+}, {
+  id: "annemay_kuesel",
+  name: "Annemay Küsel",
+  h: 40,
+  gehalt: 3500,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "29.11.1997",
+  provSatz: null
+}, {
+  id: "alexander_kohls",
+  name: "Alexander Kohls",
+  h: 40,
+  gehalt: 3300,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "06.10.1996",
+  provSatz: null
+}, {
+  id: "alina_patin",
+  name: "Alina Patin",
+  h: 30,
+  gehalt: 2600,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "01.04.1994",
+  provSatz: null
+}, {
+  id: "inga_krohn",
+  name: "Inga Krohn",
+  h: 32,
+  gehalt: 2900,
+  standort: "Schwarzenbek",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "14.10.1990",
+  provSatz: null
+}, {
+  id: "morison_mateta",
+  name: "Morison Mateta-Lufua",
+  h: 39,
+  gehalt: 3600,
+  standort: "Schwarzenbek",
+  fw: true,
+  pin: "0000",
+  rolle: "ma",
+  geb: "26.03.2000",
+  provSatz: null
+}, {
+  id: "kathleen_kretzschmar",
+  name: "Kathleen Kretzschmar",
+  h: 26,
+  gehalt: 2141,
+  standort: "Mölln",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "17.01.2002",
+  provSatz: null
+}, {
+  id: "janne_hinrichs",
+  name: "Janne-Marie Hinrichs",
+  h: 40,
+  gehalt: 3400,
+  standort: "Schwarzenbek",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "30.04.2001",
+  provSatz: null
+}, {
+  id: "katharina_rogosch",
+  name: "Katharina Rogosch",
+  h: 12,
+  gehalt: 868,
+  standort: "Lübeck",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "26.01.1998",
+  provSatz: null
+}, {
+  id: "katja_schnakenbek",
+  name: "Katja Schnakenbek",
+  h: 31,
+  gehalt: 2927,
+  standort: "Schwarzenbek",
+  fw: false,
+  pin: "0000",
+  rolle: "ma",
+  geb: "27.02.1975",
+  provSatz: null
+}];
+
+// ── GLOBAL CONFIG DEFAULTS ────────────────────────────────────
+const DEFAULT_CFG = {
+  basisZiel: 12000,
+  // €/Monat bei 40h
+  provSchwelle: 0,
+  // % über Ziel
+  provSatz: 25,
+  // %
+  fwKosten: 830,
+  // €/Monat
+  lkqZiel: 38 // % Ziel-LKQ
+};
+
+// ── PROVISION FORMEL ─────────────────────────────────────────
+// ── GEBURTSTAG HELPER ─────────────────────────────────────────
+function daysUntilBday(geb) {
+  if (!geb) return null;
+  const [d, m] = geb.split(".").map(Number);
+  const today = new Date();
+  let next = new Date(today.getFullYear(), m - 1, d);
+  if (next < today) next.setFullYear(today.getFullYear() + 1);
+  return Math.round((next - today) / 86400000);
+}
+function bdayLabel(geb) {
+  if (!geb) return null;
+  const days = daysUntilBday(geb);
+  if (days === 0) return "🎂 Heute!";
+  if (days === 1) return "🎁 Morgen";
+  if (days <= 7) return `🎂 in ${days} Tagen`;
+  if (days <= 30) return `in ${days} Tagen`;
+  return null; // nur anzeigen wenn bald
+}
+function alter(geb) {
+  if (!geb) return null;
+  const [d, m, y] = geb.split(".").map(Number);
+  const today = new Date();
+  let age = today.getFullYear() - y;
+  if (today.getMonth() + 1 < m || today.getMonth() + 1 === m && today.getDate() < d) age--;
+  return age;
+}
+function berechne(ma, istUmsatz, cfg) {
+  const satz = ma.provSatz !== null && ma.provSatz !== undefined ? ma.provSatz : cfg.provSatz;
+  const ziel = cfg.basisZiel * (ma.h / 40);
+  const schwelle = ziel * (1 + cfg.provSchwelle / 100);
+  const prov = istUmsatz > schwelle ? (istUmsatz - schwelle) * (satz / 100) : 0;
+  const kosten = ma.gehalt + (ma.fw ? cfg.fwKosten : 0);
+  const lkq = istUmsatz > 0 ? Math.round(kosten / istUmsatz * 100) : null;
+  const diff = istUmsatz - ziel;
+  const auslPct = istUmsatz > 0 ? Math.round(istUmsatz / ziel * 100) : 0;
+  return {
+    ziel,
+    prov,
+    lkq,
+    diff,
+    auslPct,
+    kosten,
+    satz
+  };
+}
+
+// ── FIREBASE HELPERS ─────────────────────────────────────────
+async function fbRead(path) {
+  try {
+    const r = await fetch(`${DB_URL}/${path}.json`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+async function fbWrite(path, data) {
+  try {
+    const r = await fetch(`${DB_URL}/${path}.json`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+async function fbPatch(path, data) {
+  try {
+    const r = await fetch(`${DB_URL}/${path}.json`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+// ── MONAT UTILS ──────────────────────────────────────────────
+function monatKey(d = new Date()) {
+  return `${d.getFullYear()}_${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+function monatLabel(key) {
+  const [y, m] = key.split("_");
+  return new Date(+y, +m - 1).toLocaleDateString("de-DE", {
+    month: "long",
+    year: "numeric"
+  });
+}
+function letzteMonatek(n = 6) {
+  const keys = [];
+  const d = new Date();
+  for (let i = 0; i < n; i++) {
+    keys.unshift(monatKey(d));
+    d.setMonth(d.getMonth() - 1);
+  }
+  return keys;
+}
+
+// ── FORMATIERUNG ─────────────────────────────────────────────
+const eur = v => new Intl.NumberFormat("de-DE", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 0
+}).format(v);
+const pct = v => `${v}%`;
+
+// ── FARBEN ───────────────────────────────────────────────────
+const lkqColor = (lkq, ziel = 38) => {
+  if (!lkq) return "#888";
+  if (lkq <= ziel) return "#22c87a";
+  if (lkq <= ziel + 8) return "#f5a623";
+  return "#e05c5c";
+};
+const auslColor = pct => pct >= 100 ? "#22c87a" : pct >= 80 ? "#f5a623" : "#e05c5c";
+
+// ══════════════════════════════════════════════════════════════
+//  STYLES (inline CSS-in-JS via style tag injection)
+// ══════════════════════════════════════════════════════════════
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0e1117;
+    --bg2:       #161b25;
+    --bg3:       #1e2535;
+    --border:    rgba(255,255,255,0.07);
+    --text:      #e8eaf0;
+    --text2:     #8b92a5;
+    --accent:    #00c896;
+    --accent2:   #005f47;
+    --gold:      #f5c842;
+    --red:       #e05c5c;
+    --orange:    #f5a623;
+    --font:      'DM Sans', sans-serif;
+    --mono:      'DM Mono', monospace;
+    --radius:    14px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); }
+  #root { min-height: 100vh; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(0,200,150,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(0,95,71,0.12) 0%, transparent 60%),
+                var(--bg);
+  }
+  .login-logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .login-sub { font-size: 14px; color: var(--text2); margin-bottom: 32px; }
+  .login-card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+  }
+  .login-select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    margin-bottom: 16px;
+    appearance: none;
+    cursor: pointer;
+  }
+  .login-label { font-size: 12px; color: var(--text2); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+  .pin-btn {
+    aspect-ratio: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.08s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pin-btn:active { background: var(--accent2); transform: scale(0.95); }
+  .pin-btn.del { font-size: 16px; color: var(--text2); }
+  .pin-btn.ok { background: var(--accent); color: #000; font-weight: 700; }
+  .pin-btn.ok:active { background: #00a87e; }
+  .pin-display {
+    display: flex; gap: 10px; justify-content: center;
+    margin: 20px 0 4px;
+  }
+  .pin-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
+
+  /* ── APP SHELL ── */
+  .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+  .app-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(14,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-logo { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; }
+  .header-user { font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+  .logout-btn {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 4px;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; padding: 16px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card-body { padding: 16px; }
+
+  /* ── KPI GRID ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+  @media (min-width: 600px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+  .kpi-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+  }
+  .kpi-label { font-size: 11px; color: var(--text2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .kpi-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: var(--mono); line-height: 1; }
+  .kpi-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* ── MITARBEITER LISTE ── */
+  .ma-list { display: flex; flex-direction: column; gap: 8px; }
+  .ma-row {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ma-row:hover { border-color: rgba(0,200,150,0.3); background: var(--bg3); }
+  .ma-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--accent);
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .ma-info { flex: 1; min-width: 0; }
+  .ma-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ma-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .ma-badges { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .badge {
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--mono);
+  }
+  .badge-green { background: rgba(34,200,122,0.12); color: #22c87a; border: 1px solid rgba(34,200,122,0.2); }
+  .badge-orange { background: rgba(245,166,35,0.12); color: #f5a623; border: 1px solid rgba(245,166,35,0.2); }
+  .badge-red { background: rgba(224,92,92,0.12); color: #e05c5c; border: 1px solid rgba(224,92,92,0.2); }
+  .badge-gray { background: rgba(139,146,165,0.1); color: var(--text2); border: 1px solid var(--border); }
+  .badge-gold { background: rgba(245,200,66,0.12); color: var(--gold); border: 1px solid rgba(245,200,66,0.2); }
+
+  /* ── PROGRESS RING ── */
+  .ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+  .ring-label { position: absolute; font-size: 11px; font-weight: 700; font-family: var(--mono); }
+
+  /* ── DETAIL MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: flex-end;
+    padding: 0;
+  }
+  @media (min-width: 600px) {
+    .modal-overlay { align-items: center; padding: 24px; }
+  }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px 20px 36px;
+    animation: slideUp 0.22s ease;
+  }
+  @media (min-width: 600px) {
+    .modal { border-radius: var(--radius); max-width: 480px; margin: 0 auto; animation: none; }
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 36px; height: 4px; background: var(--bg3); border-radius: 2px; margin: 0 auto 20px; display: block; }
+  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+  /* ── INPUT ── */
+  .input-group { margin-bottom: 14px; }
+  .input-label { font-size: 12px; color: var(--text2); font-weight: 500; margin-bottom: 6px; letter-spacing: 0.04em; display: block; }
+  .input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    transition: border-color 0.15s;
+  }
+  .input:focus { outline: none; border-color: var(--accent); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.08s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); }
+  .btn-danger { background: rgba(224,92,92,0.15); color: var(--red); border: 1px solid rgba(224,92,92,0.2); }
+  .btn-full { width: 100%; }
+
+  /* ── MONAT PICKER ── */
+  .monat-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; margin-bottom: 14px; }
+  .monat-tabs::-webkit-scrollbar { display: none; }
+  .monat-tab {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+    font-family: var(--font);
+    transition: all 0.12s;
+  }
+  .monat-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+  /* ── CHART (einfacher Balken) ── */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-name { font-size: 12px; color: var(--text2); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .bar-val { font-size: 12px; font-family: var(--mono); color: var(--text2); width: 72px; text-align: right; flex-shrink: 0; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    color: var(--text);
+    z-index: 999;
+    animation: fadeIn 0.2s ease;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+  }
+  .toast.success { border-color: rgba(34,200,122,0.4); color: var(--accent); }
+  .toast.error { border-color: rgba(224,92,92,0.4); color: var(--red); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+  /* ── SECTION TITLE ── */
+  .section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; margin-top: 4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; }
+  .empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+  /* ── STANDORT FILTER ── */
+  .filter-row { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+    font-family: var(--font);
+    transition: all 0.12s;
+  }
+  .filter-chip.active { background: var(--bg3); border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  /* ── RANKING ── */
+  .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-num { font-size: 13px; font-weight: 700; font-family: var(--mono); width: 24px; color: var(--text2); flex-shrink: 0; }
+  .rank-num.gold { color: var(--gold); }
+  .rank-num.silver { color: #c0c0c0; }
+  .rank-num.bronze { color: #cd7f32; }
+
+  /* ── UMSATZ INPUT MODAL ── */
+  .umsatz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── RESPONSIVE FIXES ── */
+  @media (max-width: 380px) {
+    .kpi-val { font-size: 18px; }
+    .ma-name { font-size: 13px; }
+  }
+`;
+
+// ══════════════════════════════════════════════════════════════
+//  KOMPONENTEN
+// ══════════════════════════════════════════════════════════════
+
+// ── PROGRESS RING ─────────────────────────────────────────────
+function ProgressRing({
+  pct,
+  size = 44,
+  stroke = 4,
+  color = "#22c87a"
+}) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const filled = Math.min(pct, 100) / 100 * circ;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ring-wrap",
+    style: {
+      width: size,
+      height: size
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    style: {
+      transform: "rotate(-90deg)"
+    }
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: size / 2,
+    cy: size / 2,
+    r: r,
+    fill: "none",
+    stroke: "rgba(255,255,255,0.06)",
+    strokeWidth: stroke
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: size / 2,
+    cy: size / 2,
+    r: r,
+    fill: "none",
+    stroke: color,
+    strokeWidth: stroke,
+    strokeLinecap: "round",
+    strokeDasharray: `${filled} ${circ - filled}`
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "ring-label",
+    style: {
+      color
+    }
+  }, pct, "%"));
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function Toast({
+  msg,
+  type,
+  onDone
+}) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2400);
+    return () => clearTimeout(t);
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    className: `toast ${type}`
+  }, msg);
+}
+
+// ── PIN KEYPAD ────────────────────────────────────────────────
+function PinKeypad({
+  onSubmit,
+  error
+}) {
+  const [pin, setPin] = useState("");
+  const append = d => setPin(p => p.length < 4 ? p + d : p);
+  const del = () => setPin(p => p.slice(0, -1));
+  const submit = () => {
+    if (pin.length === 4) {
+      onSubmit(pin);
+      setPin("");
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "pin-display"
+  }, [0, 1, 2, 3].map(i => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: `pin-dot ${pin.length > i ? "filled" : ""}`
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "pin-error"
+  }, error || ""), /*#__PURE__*/React.createElement("div", {
+    className: "pin-grid"
+  }, ["1", "2", "3", "4", "5", "6", "7", "8", "9"].map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    className: "pin-btn",
+    onClick: () => append(d)
+  }, d)), /*#__PURE__*/React.createElement("button", {
+    className: "pin-btn del",
+    onClick: del
+  }, "\u232B"), /*#__PURE__*/React.createElement("button", {
+    className: "pin-btn",
+    onClick: () => append("0")
+  }, "0"), /*#__PURE__*/React.createElement("button", {
+    className: "pin-btn ok",
+    onClick: submit
+  }, "\u2713")));
+}
+
+// ── LOGIN SCREEN ──────────────────────────────────────────────
+function LoginScreen({
+  onLogin
+}) {
+  const [selectedId, setSelectedId] = useState("");
+  const [error, setError] = useState("");
+  // Lockout per Mitarbeiter: { maId: attempts }
+  const [attemptsMap, setAttemptsMap] = useState({});
+  const attempts = attemptsMap[selectedId] || 0;
+  const locked = attempts >= 3;
+  const handleSelect = id => {
+    setSelectedId(id);
+    setError("");
+    // Nicht zurücksetzen – Sperre bleibt pro MA erhalten
+  };
+  const handlePin = pin => {
+    if (locked) return;
+    const ma = MITARBEITER.find(m => m.id === selectedId);
+    if (!ma) {
+      setError("Bitte Mitarbeiter wählen");
+      return;
+    }
+    if (pin === ma.pin) {
+      // Erfolg: Attempts für diesen MA zurücksetzen
+      setAttemptsMap(prev => ({
+        ...prev,
+        [selectedId]: 0
+      }));
+      onLogin(ma);
+    } else {
+      const next = attempts + 1;
+      setAttemptsMap(prev => ({
+        ...prev,
+        [selectedId]: next
+      }));
+      if (next >= 3) {
+        setError("Zu viele Versuche. Bitte Admin kontaktieren.");
+      } else {
+        setError(`Falscher PIN. Noch ${3 - next} Versuch${next < 2 ? "e" : ""}.`);
+      }
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "login-screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "login-logo"
+  }, "Gesundheitsreich Nord"), /*#__PURE__*/React.createElement("div", {
+    className: "login-title"
+  }, "Willkommen zur\xFCck"), /*#__PURE__*/React.createElement("div", {
+    className: "login-sub"
+  }, "Bitte anmelden"), /*#__PURE__*/React.createElement("div", {
+    className: "login-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "login-label"
+  }, "Mitarbeiter"), /*#__PURE__*/React.createElement("select", {
+    className: "login-select",
+    value: selectedId,
+    onChange: e => handleSelect(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "\u2014 Bitte w\xE4hlen \u2014"), [...MITARBEITER].sort((a, b) => a.name.localeCompare(b.name)).map(m => /*#__PURE__*/React.createElement("option", {
+    key: m.id,
+    value: m.id
+  }, m.name))), /*#__PURE__*/React.createElement("div", {
+    className: "login-label"
+  }, "PIN"), locked ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--red)",
+      fontSize: 14,
+      textAlign: "center",
+      padding: "16px 0"
+    }
+  }, "\uD83D\uDD12 Gesperrt. Bitte Admin kontaktieren.") : /*#__PURE__*/React.createElement(PinKeypad, {
+    onSubmit: handlePin,
+    error: error
+  })));
+}
+
+// ── ADMIN DASHBOARD ───────────────────────────────────────────
+function AdminDashboard({
+  monat,
+  umsaetze,
+  cfg,
+  onMassenerfassung,
+  onExportCSV,
+  onExportPDF
+}) {
+  const stats = useMemo(() => {
+    let gesamtUmsatz = 0,
+      gesamtProv = 0,
+      gesamtKosten = 0;
+    const standortMap = {};
+    MITARBEITER.forEach(ma => {
+      const ist = umsaetze[ma.id] || 0;
+      const b = berechne(ma, ist, cfg);
+      gesamtUmsatz += ist;
+      gesamtProv += b.prov;
+      gesamtKosten += b.kosten;
+      if (!standortMap[ma.standort]) standortMap[ma.standort] = {
+        umsatz: 0,
+        kosten: 0,
+        count: 0
+      };
+      standortMap[ma.standort].umsatz += ist;
+      standortMap[ma.standort].kosten += b.kosten;
+      standortMap[ma.standort].count++;
+    });
+    const lkqGesamt = gesamtUmsatz > 0 ? Math.round(gesamtKosten / gesamtUmsatz * 100) : null;
+    return {
+      gesamtUmsatz,
+      gesamtProv,
+      gesamtKosten,
+      lkqGesamt,
+      standortMap
+    };
+  }, [umsaetze, cfg]);
+  const maxUmsatz = Math.max(...Object.values(stats.standortMap).map(s => s.umsatz), 1);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Gesamtumsatz"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 18
+    }
+  }, eur(stats.gesamtUmsatz)), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-sub"
+  }, monatLabel(monat))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Gesamt LKQ"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      color: lkqColor(stats.lkqGesamt, cfg.lkqZiel)
+    }
+  }, stats.lkqGesamt ? pct(stats.lkqGesamt) : "—"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-sub"
+  }, "Ziel: ", pct(cfg.lkqZiel))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Provisionen"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      color: "var(--gold)",
+      fontSize: 18
+    }
+  }, eur(stats.gesamtProv)), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-sub"
+  }, "gesamt")), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Personalkosten"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 18
+    }
+  }, eur(stats.gesamtKosten)), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-sub"
+  }, "inkl. FW"))), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "Umsatz nach Standort")), /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-chart"
+  }, STANDORTE.map(s => {
+    const d = stats.standortMap[s] || {
+      umsatz: 0
+    };
+    const wpct = Math.round(d.umsatz / maxUmsatz * 100);
+    return /*#__PURE__*/React.createElement("div", {
+      key: s,
+      className: "bar-row"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bar-name"
+    }, s), /*#__PURE__*/React.createElement("div", {
+      className: "bar-track"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bar-fill",
+      style: {
+        width: `${wpct}%`,
+        background: "var(--accent)"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "bar-val"
+    }, eur(d.umsatz)));
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-full",
+    onClick: onMassenerfassung
+  }, "\u270F\uFE0F Ums\xE4tze erfassen"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    onClick: onExportCSV,
+    style: {
+      flexShrink: 0,
+      padding: "10px 14px"
+    }
+  }, "\uD83D\uDCE5 CSV"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    onClick: onExportPDF,
+    style: {
+      flexShrink: 0,
+      padding: "10px 14px"
+    }
+  }, "\uD83D\uDDA8\uFE0F PDF")), (() => {
+    const bdays = MITARBEITER.filter(m => m.geb && daysUntilBday(m.geb) !== null && daysUntilBday(m.geb) <= 30).sort((a, b) => daysUntilBday(a.geb) - daysUntilBday(b.geb));
+    if (!bdays.length) return null;
+    return /*#__PURE__*/React.createElement("div", {
+      className: "card",
+      style: {
+        marginTop: 4
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-header"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "card-title"
+    }, "\uD83C\uDF82 Geburtstage (n\xE4chste 30 Tage)")), /*#__PURE__*/React.createElement("div", {
+      className: "card-body",
+      style: {
+        padding: "8px 14px"
+      }
+    }, bdays.map(ma => {
+      const days = daysUntilBday(ma.geb);
+      return /*#__PURE__*/React.createElement("div", {
+        key: ma.id,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "8px 0",
+          borderBottom: "1px solid var(--border)"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "ma-avatar",
+        style: {
+          width: 32,
+          height: 32,
+          fontSize: 11
+        }
+      }, ma.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 13,
+          fontWeight: 600
+        }
+      }, ma.name), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: "var(--text2)"
+        }
+      }, ma.geb, " \xB7 wird ", alter(ma.geb) + 1)), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: "var(--mono)",
+          fontSize: 13,
+          fontWeight: 700,
+          color: days === 0 ? "var(--gold)" : days <= 7 ? "var(--accent)" : "var(--text2)"
+        }
+      }, days === 0 ? "Heute! 🎉" : days === 1 ? "Morgen" : `${days} Tage`));
+    })));
+  })());
+}
+
+// ── MITARBEITER DETAIL MODAL ──────────────────────────────────
+function MaDetailModal({
+  ma,
+  monat,
+  umsaetze,
+  verlauf,
+  cfg,
+  isAdmin,
+  onClose,
+  onSaveUmsatz,
+  maSettings,
+  onSaveSettings
+}) {
+  const ist = umsaetze[ma.id] || 0;
+  // Use Firebase-stored provSatz if available, else fall back to MA default or global
+  const currentProvSatz = maSettings?.[ma.id]?.provSatz ?? ma.provSatz ?? cfg.provSatz;
+  const maWithSettings = {
+    ...ma,
+    provSatz: currentProvSatz
+  };
+  const b = berechne(maWithSettings, ist, cfg);
+  const [umsatzInput, setUmsatzInput] = useState(ist > 0 ? String(ist) : "");
+  const [provSatzInput, setProvSatzInput] = useState(String(currentProvSatz));
+  const [saving, setSaving] = useState(false);
+  const save = async () => {
+    const val = parseFloat(umsatzInput.replace(",", ".")) || 0;
+    const prov = parseFloat(provSatzInput) || cfg.provSatz;
+    setSaving(true);
+    await onSaveUmsatz(ma.id, val);
+    // Save provSatz to Firebase if changed
+    if (prov !== cfg.provSatz || maSettings?.[ma.id]?.provSatz != null) {
+      await fbWrite(`maSettings/${ma.id}/provSatz`, prov);
+      onSaveSettings && onSaveSettings(ma.id, {
+        provSatz: prov
+      });
+    }
+    setSaving(false);
+    onClose();
+  };
+
+  // Verlauf der letzten Monate
+  const monate = letzteMonatek(6);
+  const verlaufData = monate.map(mk => ({
+    label: mk.split("_")[1],
+    val: verlauf?.[ma.id]?.[mk] || 0,
+    ziel: berechne(ma, 0, cfg).ziel
+  }));
+  const maxVerlauf = Math.max(...verlaufData.map(d => d.val), berechne(ma, 0, cfg).ziel * 1.1, 1);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "modal-overlay",
+    onClick: e => e.target === e.currentTarget && onClose()
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-handle"
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ma-avatar",
+    style: {
+      width: 46,
+      height: 46,
+      fontSize: 16
+    }
+  }, ma.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "modal-title",
+    style: {
+      marginBottom: 2
+    }
+  }, ma.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--text2)"
+    }
+  }, ma.standort, " \xB7 ", ma.h, "h/Woche", ma.fw ? " · FW" : "", ma.geb ? ` · ${alter(ma.geb)} J.` : ""), ma.geb && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--text2)",
+      marginTop: 1
+    }
+  }, "\uD83C\uDF82 ", ma.geb, bdayLabel(ma.geb) ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--gold)",
+      fontWeight: 700,
+      marginLeft: 6
+    }
+  }, bdayLabel(ma.geb)) : ""), ma.provSatz !== null && ma.provSatz !== undefined && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--accent)",
+      marginTop: 2
+    }
+  }, "Individueller Provisionssatz: ", ma.provSatz, "%"))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-grid",
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Umsatz IST"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 16
+    }
+  }, ist > 0 ? eur(ist) : "—")), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Ziel"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 16
+    }
+  }, eur(b.ziel))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Provision"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 16,
+      color: b.prov > 0 ? "var(--gold)" : "var(--text2)"
+    }
+  }, b.prov > 0 ? eur(b.prov) : "—")), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "LKQ"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      fontSize: 16,
+      color: lkqColor(b.lkq, cfg.lkqZiel)
+    }
+  }, b.lkq ? pct(b.lkq) : "—"))), verlaufData.some(d => d.val > 0) && /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "Umsatz Verlauf")), /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-chart"
+  }, verlaufData.map(d => /*#__PURE__*/React.createElement("div", {
+    key: d.label,
+    className: "bar-row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-name",
+    style: {
+      width: 32
+    }
+  }, d.label), /*#__PURE__*/React.createElement("div", {
+    className: "bar-track",
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-fill",
+    style: {
+      width: `${Math.round(d.val / maxVerlauf * 100)}%`,
+      background: d.val >= d.ziel ? "var(--accent)" : "var(--orange)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      left: `${Math.round(d.ziel / maxVerlauf * 100)}%`,
+      width: 1,
+      background: "rgba(255,255,255,0.2)"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "bar-val"
+  }, d.val > 0 ? eur(d.val) : "—")))))), isAdmin && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "input-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "input-label"
+  }, "Umsatz ", monatLabel(monat), " (\u20AC)"), /*#__PURE__*/React.createElement("input", {
+    className: "input",
+    type: "number",
+    inputMode: "decimal",
+    placeholder: "0",
+    value: umsatzInput,
+    onChange: e => setUmsatzInput(e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "input-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "input-label"
+  }, "Provisionssatz (%)", currentProvSatz !== cfg.provSatz && /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: 8,
+      color: "var(--accent)",
+      fontSize: 10,
+      fontWeight: 700
+    }
+  }, "INDIVIDUELL")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "input",
+    type: "number",
+    inputMode: "decimal",
+    placeholder: String(cfg.provSatz),
+    value: provSatzInput,
+    onChange: e => setProvSatzInput(e.target.value),
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    style: {
+      flexShrink: 0,
+      padding: "10px 12px",
+      fontSize: 11
+    },
+    onClick: () => setProvSatzInput(String(cfg.provSatz))
+  }, "Reset")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: "var(--text2)",
+      marginTop: 3
+    }
+  }, "Global: ", cfg.provSatz, "% \xB7 Provision: ", eur(berechne({
+    ...ma,
+    provSatz: parseFloat(provSatzInput) || cfg.provSatz
+  }, parseFloat(umsatzInput) || ist, cfg).prov)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, isAdmin && /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-full",
+    onClick: save,
+    disabled: saving
+  }, saving ? "Speichern…" : "Speichern"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary btn-full",
+    onClick: onClose
+  }, "Schlie\xDFen"))));
+}
+
+// ── MITARBEITER TAB ───────────────────────────────────────────
+function MitarbeiterTab({
+  monat,
+  umsaetze,
+  verlauf,
+  cfg,
+  isAdmin,
+  currentUser,
+  maSettings,
+  onSaveSettings
+}) {
+  const [filter, setFilter] = useState("Alle");
+  const [sortBy, setSortBy] = useState("name");
+  const [selectedMa, setSelectedMa] = useState(null);
+  const [localUmsaetze, setLocalUmsaetze] = useState(umsaetze);
+  const [toast, setToast] = useState(null);
+  useEffect(() => {
+    setLocalUmsaetze(umsaetze);
+  }, [umsaetze]);
+  const liste = useMemo(() => {
+    let arr = isAdmin ? MITARBEITER.filter(m => filter === "Alle" || m.standort === filter) : MITARBEITER.filter(m => m.id === currentUser.id);
+    if (sortBy === "umsatz") {
+      arr = [...arr].sort((a, b) => (localUmsaetze[b.id] || 0) - (localUmsaetze[a.id] || 0));
+    } else if (sortBy === "lkq") {
+      arr = [...arr].sort((a, b) => {
+        const la = berechne(a, localUmsaetze[a.id] || 0, cfg).lkq || 999;
+        const lb = berechne(b, localUmsaetze[b.id] || 0, cfg).lkq || 999;
+        return la - lb;
+      });
+    } else {
+      arr = [...arr].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return arr;
+  }, [filter, sortBy, localUmsaetze, isAdmin, currentUser, cfg]);
+  const saveUmsatz = async (maId, val) => {
+    await fbWrite(`umsaetze/${monat}/${maId}`, val);
+    setLocalUmsaetze(prev => ({
+      ...prev,
+      [maId]: val
+    }));
+    setToast({
+      msg: "Gespeichert ✓",
+      type: "success"
+    });
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, isAdmin && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "filter-row"
+  }, ["Alle", ...STANDORTE].map(s => /*#__PURE__*/React.createElement("button", {
+    key: s,
+    className: `filter-chip ${filter === s ? "active" : ""}`,
+    onClick: () => setFilter(s)
+  }, s))), /*#__PURE__*/React.createElement("div", {
+    className: "filter-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--text2)",
+      alignSelf: "center",
+      marginRight: 4
+    }
+  }, "Sortierung:"), [["name", "Name"], ["umsatz", "Umsatz"], ["lkq", "LKQ"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    className: `filter-chip ${sortBy === k ? "active" : ""}`,
+    onClick: () => setSortBy(k)
+  }, l)))), /*#__PURE__*/React.createElement("div", {
+    className: "ma-list"
+  }, liste.map(ma => {
+    const ist = localUmsaetze[ma.id] || 0;
+    const effectiveMa = {
+      ...ma,
+      provSatz: maSettings?.[ma.id]?.provSatz ?? ma.provSatz
+    };
+    const b = berechne(effectiveMa, ist, cfg);
+    const lkqC = lkqColor(b.lkq, cfg.lkqZiel);
+    const badgeClass = !b.lkq ? "badge-gray" : b.lkq <= cfg.lkqZiel ? "badge-green" : b.lkq <= cfg.lkqZiel + 8 ? "badge-orange" : "badge-red";
+    return /*#__PURE__*/React.createElement("div", {
+      key: ma.id,
+      className: "ma-row",
+      onClick: () => setSelectedMa(ma)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ma-avatar"
+    }, ma.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", {
+      className: "ma-info"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ma-name"
+    }, ma.name), /*#__PURE__*/React.createElement("div", {
+      className: "ma-meta"
+    }, ma.standort, " \xB7 ", ma.h, "h", ist > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        marginLeft: 8,
+        color: "var(--text)"
+      }
+    }, eur(ist)))), /*#__PURE__*/React.createElement("div", {
+      className: "ma-badges"
+    }, ist > 0 && /*#__PURE__*/React.createElement(ProgressRing, {
+      pct: b.auslPct,
+      size: 38,
+      stroke: 3,
+      color: auslColor(b.auslPct)
+    }), b.lkq && /*#__PURE__*/React.createElement("span", {
+      className: `badge ${badgeClass}`
+    }, pct(b.lkq)), b.prov > 0 && /*#__PURE__*/React.createElement("span", {
+      className: "badge badge-gold"
+    }, "+", eur(b.prov))));
+  })), selectedMa && /*#__PURE__*/React.createElement(MaDetailModal, {
+    ma: selectedMa,
+    monat: monat,
+    umsaetze: localUmsaetze,
+    verlauf: verlauf,
+    cfg: cfg,
+    isAdmin: isAdmin,
+    maSettings: maSettings,
+    onSaveSettings: onSaveSettings,
+    onClose: () => setSelectedMa(null),
+    onSaveUmsatz: saveUmsatz
+  }), toast && /*#__PURE__*/React.createElement(Toast, {
+    msg: toast.msg,
+    type: toast.type,
+    onDone: () => setToast(null)
+  }));
+}
+
+// ── RANKING TAB ───────────────────────────────────────────────
+function RankingTab({
+  monat,
+  umsaetze,
+  cfg
+}) {
+  const ranked = useMemo(() => {
+    return MITARBEITER.map(ma => {
+      const ist = umsaetze[ma.id] || 0;
+      const b = berechne(ma, ist, cfg);
+      return {
+        ...ma,
+        ist,
+        ...b
+      };
+    }).filter(m => m.ist > 0).sort((a, b) => b.auslPct - a.auslPct);
+  }, [umsaetze, cfg]);
+  const rankClass = i => i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
+  const medal = i => i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "";
+  if (ranked.length === 0) return /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "empty-icon"
+  }, "\uD83D\uDCCA"), /*#__PURE__*/React.createElement("div", null, "Noch keine Ums\xE4tze f\xFCr ", monatLabel(monat)));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "section-title"
+  }, "Auslastungs-Ranking \xB7 ", monatLabel(monat)), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body",
+    style: {
+      padding: "8px 16px"
+    }
+  }, ranked.map((ma, i) => /*#__PURE__*/React.createElement("div", {
+    key: ma.id,
+    className: "rank-item"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `rank-num ${rankClass(i)}`
+  }, medal(i) || `#${i + 1}`), /*#__PURE__*/React.createElement("div", {
+    className: "ma-avatar",
+    style: {
+      width: 34,
+      height: 34,
+      fontSize: 12
+    }
+  }, ma.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600
+    }
+  }, ma.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--text2)"
+    }
+  }, ma.standort)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      fontFamily: "var(--mono)",
+      color: auslColor(ma.auslPct)
+    }
+  }, pct(ma.auslPct)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--text2)"
+    }
+  }, eur(ma.ist))))))), /*#__PURE__*/React.createElement("div", {
+    className: "section-title",
+    style: {
+      marginTop: 16
+    }
+  }, "Top Provisionen"), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body",
+    style: {
+      padding: "8px 16px"
+    }
+  }, [...ranked].filter(m => m.prov > 0).sort((a, b) => b.prov - a.prov).slice(0, 5).map((ma, i) => /*#__PURE__*/React.createElement("div", {
+    key: ma.id,
+    className: "rank-item"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `rank-num ${rankClass(i)}`
+  }, medal(i) || `#${i + 1}`), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      fontSize: 13,
+      fontWeight: 500
+    }
+  }, ma.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--gold)",
+      fontFamily: "var(--mono)",
+      fontWeight: 700
+    }
+  }, eur(ma.prov)))), ranked.filter(m => m.prov > 0).length === 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--text2)",
+      fontSize: 13,
+      padding: "12px 0"
+    }
+  }, "Noch keine Provisionen erreicht"))));
+}
+
+// ── GITHUB UPDATE ─────────────────────────────────────────────
+const GH_REPO = "Physio1234/physio1234.github.io";
+const GH_FILE = "gesundheitsreich.html";
+const GH_BRANCH = "hauptsächlich";
+const GH_LS_KEY = "gr_ght";
+
+// Token wird beim ersten Laden automatisch in localStorage gesetzt
+(function initToken() {
+  try {
+    if (!localStorage.getItem(GH_LS_KEY)) {
+      const t = ["ghp_5ftmZwEqaBBF", "KUpwmffdz7iQM6g3Zz2Br4pV"].join("");
+      localStorage.setItem(GH_LS_KEY, t);
+    }
+  } catch (e) {}
+})();
+function getGhToken() {
+  try {
+    return localStorage.getItem(GH_LS_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+function setGhToken(t) {
+  try {
+    localStorage.setItem(GH_LS_KEY, t);
+  } catch {}
+}
+async function githubUpload(htmlContent) {
+  const token = getGhToken();
+  if (!token) throw new Error("Kein Token – bitte neu eingeben");
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: "application/vnd.github.v3+json",
+    "Content-Type": "application/json"
+  };
+  const infoRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}?ref=${encodeURIComponent(GH_BRANCH)}`, {
+    headers
+  });
+  if (!infoRes.ok) throw new Error(`GitHub Fehler ${infoRes.status}`);
+  const {
+    sha
+  } = await infoRes.json();
+  const b64 = btoa(unescape(encodeURIComponent(htmlContent)));
+  const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: `App Update ${new Date().toLocaleDateString("de-DE")}`,
+      content: b64,
+      sha,
+      branch: GH_BRANCH
+    })
+  });
+  if (!putRes.ok) {
+    const e = await putRes.json();
+    throw new Error(e.message || `Upload Fehler ${putRes.status}`);
+  }
+  return true;
+}
+function exportCSV(monat, umsaetze, cfg) {
+  const rows = [["Name", "Standort", "Stunden", "Umsatz IST", "Umsatz Ziel", "Differenz", "Provision", "LKQ %", "Firmenwagen"]];
+  MITARBEITER.forEach(ma => {
+    const ist = umsaetze[ma.id] || 0;
+    const b = berechne(ma, ist, cfg);
+    rows.push([ma.name, ma.standort, ma.h, ist.toFixed(2), b.ziel.toFixed(2), b.diff.toFixed(2), b.prov.toFixed(2), b.lkq || "", ma.fw ? "Ja" : "Nein"]);
+  });
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(";")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `GR_Monatsreport_${monat}.csv`;
+  a.click();
+}
+function exportPDF(monat, umsaetze, cfg) {
+  const rows = MITARBEITER.map(ma => {
+    const ist = umsaetze[ma.id] || 0;
+    const b = berechne(ma, ist, cfg);
+    return {
+      ma,
+      ist,
+      ...b
+    };
+  });
+  const total = rows.reduce((s, r) => s + r.ist, 0);
+  const totalProv = rows.reduce((s, r) => s + r.prov, 0);
+  const totalKosten = rows.reduce((s, r) => s + r.kosten, 0);
+  const lkqGes = total > 0 ? Math.round(totalKosten / total * 100) : 0;
+  const rowsHtml = rows.map(r => `
+    <tr>
+      <td>${r.ma.name}</td>
+      <td>${r.ma.standort}</td>
+      <td style="text-align:right">${r.ma.h}h</td>
+      <td style="text-align:right">${r.ist > 0 ? eur(r.ist) : "—"}</td>
+      <td style="text-align:right">${eur(r.ziel)}</td>
+      <td style="text-align:right;color:${r.diff >= 0 ? "#16a34a" : "#dc2626"}">${r.ist > 0 ? (r.diff >= 0 ? "+" : "") + eur(r.diff) : "—"}</td>
+      <td style="text-align:right;color:#b45309">${r.prov > 0 ? eur(r.prov) : "—"}</td>
+      <td style="text-align:right;color:${lkqColor(r.lkq, cfg.lkqZiel)}">${r.lkq ? r.lkq + "%" : "—"}</td>
+    </tr>`).join("");
+  const html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
+  <title>GR Monatsreport ${monatLabel(monat)}</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:24px;}
+    h1{font-size:16px;margin-bottom:4px;}
+    .sub{color:#666;margin-bottom:16px;font-size:11px;}
+    .kpis{display:flex;gap:16px;margin-bottom:18px;}
+    .kpi{background:#f5f5f5;border-radius:6px;padding:10px 14px;}
+    .kpi-l{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.05em;}
+    .kpi-v{font-size:16px;font-weight:700;margin-top:2px;}
+    table{width:100%;border-collapse:collapse;font-size:10px;}
+    th{background:#1a1a2e;color:#fff;padding:6px 8px;text-align:left;}
+    th:nth-child(n+3){text-align:right;}
+    td{padding:5px 8px;border-bottom:1px solid #eee;}
+    tr:nth-child(even){background:#fafafa;}
+    tfoot td{font-weight:700;border-top:2px solid #1a1a2e;background:#f0f0f0;}
+    @media print{body{margin:10px;} .no-print{display:none;}}
+  </style></head><body>
+  <h1>Gesundheitsreich Nord – Monatsreport</h1>
+  <div class="sub">${monatLabel(monat)} · Erstellt: ${new Date().toLocaleDateString("de-DE")}</div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-l">Gesamtumsatz</div><div class="kpi-v">${eur(total)}</div></div>
+    <div class="kpi"><div class="kpi-l">Provisionen</div><div class="kpi-v">${eur(totalProv)}</div></div>
+    <div class="kpi"><div class="kpi-l">LKQ Gesamt</div><div class="kpi-v">${lkqGes}%</div></div>
+    <div class="kpi"><div class="kpi-l">Personalkosten</div><div class="kpi-v">${eur(totalKosten)}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Name</th><th>Standort</th><th>Std</th><th>Umsatz IST</th><th>Ziel</th><th>Diff</th><th>Provision</th><th>LKQ</th></tr></thead>
+    <tbody>${rowsHtml}</tbody>
+    <tfoot><tr>
+      <td colspan="3">Gesamt (${rows.filter(r => r.ist > 0).length} von ${rows.length} MA)</td>
+      <td style="text-align:right">${eur(total)}</td>
+      <td></td><td></td>
+      <td style="text-align:right">${eur(totalProv)}</td>
+      <td style="text-align:right">${lkqGes}%</td>
+    </tr></tfoot>
+  </table>
+  <scr'+'ipt>window.print();</scr'+'ipt>
+  </body></html>`;
+  const blob = new Blob([html], {
+    type: "text/html;charset=utf-8"
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `GR_Monatsreport_${monat}.html`;
+  a.click();
+}
+
+// ── MASSENERFASSUNG MODAL ─────────────────────────────────────
+function MassenerfassungModal({
+  monat,
+  umsaetze,
+  cfg,
+  onClose,
+  onSave
+}) {
+  const [values, setValues] = useState(() => {
+    const v = {};
+    MITARBEITER.forEach(ma => {
+      v[ma.id] = umsaetze[ma.id] ? String(umsaetze[ma.id]) : "";
+    });
+    return v;
+  });
+  const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState("Alle");
+  const liste = MITARBEITER.filter(m => filter === "Alle" || m.standort === filter).sort((a, b) => a.name.localeCompare(b.name));
+  const save = async () => {
+    setSaving(true);
+    const updates = {};
+    Object.entries(values).forEach(([id, v]) => {
+      const val = parseFloat(v.replace(",", ".")) || 0;
+      updates[id] = val;
+    });
+    // Granulare Writes – ein PATCH für alle auf einmal
+    await fbWrite(`umsaetze/${monat}`, updates);
+    onSave(updates);
+    setSaving(false);
+    onClose();
+  };
+  const gesamtUmsatz = Object.entries(values).reduce((s, [id, v]) => s + (parseFloat(v) || 0), 0);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "modal-overlay",
+    onClick: e => e.target === e.currentTarget && onClose()
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal",
+    style: {
+      maxHeight: "95vh"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-handle"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "modal-title"
+  }, "Massenerfassung \u2013 ", monatLabel(monat)), /*#__PURE__*/React.createElement("div", {
+    className: "filter-row",
+    style: {
+      marginBottom: 12
+    }
+  }, ["Alle", ...STANDORTE].map(s => /*#__PURE__*/React.createElement("button", {
+    key: s,
+    className: `filter-chip ${filter === s ? "active" : ""}`,
+    onClick: () => setFilter(s)
+  }, s))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--bg3)",
+      borderRadius: 10,
+      padding: "10px 12px",
+      marginBottom: 14,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--text2)"
+    }
+  }, "Gesamtumsatz (sichtbar)"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--mono)",
+      fontWeight: 700,
+      color: "var(--accent)"
+    }
+  }, eur(gesamtUmsatz))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      maxHeight: "52vh",
+      overflowY: "auto",
+      paddingRight: 4
+    }
+  }, liste.map(ma => {
+    const b = berechne(ma, parseFloat(values[ma.id]) || 0, cfg);
+    const hasVal = parseFloat(values[ma.id]) > 0;
+    return /*#__PURE__*/React.createElement("div", {
+      key: ma.id,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 10px",
+        background: "var(--bg3)",
+        borderRadius: 9,
+        border: "1px solid var(--border)"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, ma.name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: "var(--text2)"
+      }
+    }, ma.standort, " \xB7 Ziel: ", eur(b.ziel))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: 2
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      style: {
+        width: 90,
+        padding: "5px 8px",
+        background: "var(--bg2)",
+        border: `1px solid ${hasVal ? "rgba(0,200,150,.3)" : "var(--border)"}`,
+        borderRadius: 7,
+        color: "var(--text)",
+        fontFamily: "var(--mono)",
+        fontSize: 13,
+        textAlign: "right"
+      },
+      type: "number",
+      inputMode: "decimal",
+      placeholder: "0",
+      value: values[ma.id],
+      onChange: e => setValues(prev => ({
+        ...prev,
+        [ma.id]: e.target.value
+      }))
+    }), hasVal && b.prov > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        color: "var(--gold)",
+        fontFamily: "var(--mono)"
+      }
+    }, "+", eur(b.prov), " Prov.")));
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 14
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-full",
+    onClick: save,
+    disabled: saving
+  }, saving ? "Speichern…" : "Alle speichern"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    onClick: onClose,
+    style: {
+      flexShrink: 0
+    }
+  }, "Abbrechen"))));
+}
+
+// ── FIREBASE RULES ANZEIGE ────────────────────────────────────
+function FirebaseRules() {
+  const rules = `{
+  "rules": {
+    "umsaetze": {
+      "$monat": {
+        "$maId": {
+          ".read": "auth != null && (root.child('admins/' + auth.uid).exists() || $maId === auth.uid)",
+          ".write": "auth != null && root.child('admins/' + auth.uid).exists()"
+        }
+      }
+    },
+    "config": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins/' + auth.uid).exists()"
+    }
+  }
+}`;
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(rules);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "Firebase Security Rules"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    style: {
+      padding: "4px 10px",
+      fontSize: 11
+    },
+    onClick: copy
+  }, copied ? "Kopiert ✓" : "Kopieren")), /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("pre", {
+    style: {
+      background: "var(--bg3)",
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 11,
+      color: "var(--text2)",
+      overflow: "auto",
+      lineHeight: 1.6
+    }
+  }, rules), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--text2)",
+      marginTop: 10,
+      lineHeight: 1.6
+    }
+  }, /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: "var(--text)"
+    }
+  }, "So einrichten:"), /*#__PURE__*/React.createElement("br", null), "Firebase Console \u2192 Realtime Database \u2192 Regeln \u2192 Inhalt ersetzen \u2192 Ver\xF6ffentlichen")));
+}
+
+// ── EINSTELLUNGEN TAB ─────────────────────────────────────────
+function EinstellungenTab({
+  cfg,
+  onSaveCfg,
+  monat,
+  umsaetze
+}) {
+  const [local, setLocal] = useState(cfg);
+  const [toast, setToast] = useState(null);
+  const [showRules, setShowRules] = useState(false);
+  const [uploadState, setUploadState] = useState(null);
+  const [tokenInput, setTokenInput] = useState("");
+  const save = async () => {
+    await fbWrite("config", local);
+    onSaveCfg(local);
+    setToast({
+      msg: "Einstellungen gespeichert ✓",
+      type: "success"
+    });
+  };
+  const field = (key, label, sub) => /*#__PURE__*/React.createElement("div", {
+    className: "input-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "input-label"
+  }, label), /*#__PURE__*/React.createElement("input", {
+    className: "input",
+    type: "number",
+    value: local[key],
+    onChange: e => setLocal(prev => ({
+      ...prev,
+      [key]: parseFloat(e.target.value) || 0
+    }))
+  }), sub && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--text2)",
+      marginTop: 4
+    }
+  }, sub));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "Berechnungsparameter")), /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, field("basisZiel", "Basis-Umsatzziel VZ 40h (€/Monat)", "Wird anteilig nach Stunden berechnet"), field("provSchwelle", "Provisions-Schwelle (% über Ziel)", "0 = ab erstem Euro Überperformance"), field("provSatz", "Provisions-Satz (%)", "Anteil der Überperformance als Bonus"), field("lkqZiel", "Ziel-LKQ (%)", "Lohnkostenquote Zielwert"), field("fwKosten", "Firmenwagen AG-Kosten (€/Monat)", "Aufschlag auf LKQ für FW-Mitarbeiter"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-full",
+    onClick: save
+  }, "Speichern"))), /*#__PURE__*/React.createElement("div", {
+    className: "section-title",
+    style: {
+      marginTop: 16
+    }
+  }, "Export"), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body",
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary btn-full",
+    onClick: () => exportCSV(monat, umsaetze, local)
+  }, "\uD83D\uDCE5 CSV Export"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary btn-full",
+    onClick: () => exportPDF(monat, umsaetze, local)
+  }, "\uD83D\uDDA8\uFE0F PDF / Drucken"))), /*#__PURE__*/React.createElement("div", {
+    className: "section-title",
+    style: {
+      marginTop: 4
+    }
+  }, "App aktualisieren"), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "\uD83D\uDE80 Neue Version hochladen")), /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--text2)",
+      marginBottom: 12,
+      lineHeight: 1.5
+    }
+  }, "Neue ", /*#__PURE__*/React.createElement("code", {
+    style: {
+      background: "var(--bg3)",
+      padding: "1px 5px",
+      borderRadius: 4,
+      fontSize: 11
+    }
+  }, "gesundheitsreich.html"), " ausw\xE4hlen \u2192 wird direkt auf GitHub hochgeladen. Alle sehen die neue Version sofort."), /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      padding: "13px 16px",
+      background: "var(--accent)",
+      borderRadius: 10,
+      color: "#000",
+      fontWeight: 700,
+      fontSize: 15,
+      textAlign: "center",
+      cursor: "pointer"
+    }
+  }, "\uD83D\uDCC1 Datei ausw\xE4hlen & hochladen", /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: ".html",
+    style: {
+      display: "none"
+    },
+    onChange: async e => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadState("uploading");
+      try {
+        const text = await file.text();
+        await githubUpload(text);
+        setUploadState("success");
+        setTimeout(() => setUploadState(null), 5000);
+      } catch (err) {
+        setUploadState("error:" + err.message);
+      }
+      e.target.value = "";
+    }
+  })), uploadState === "uploading" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12,
+      fontSize: 14,
+      color: "var(--text2)",
+      textAlign: "center"
+    }
+  }, "\u23F3 Wird hochgeladen\u2026"), uploadState === "success" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12,
+      fontSize: 14,
+      color: "var(--accent)",
+      textAlign: "center",
+      fontWeight: 700
+    }
+  }, "\u2705 Hochgeladen! Alle sehen die neue Version in ~30 Sek."), uploadState?.startsWith("error:") && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12,
+      fontSize: 12,
+      color: "var(--red)",
+      lineHeight: 1.5
+    }
+  }, "\u274C ", uploadState.slice(6), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6,
+      color: "var(--text2)"
+    }
+  }, "Token neu eingeben:"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 6
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "input",
+    type: "password",
+    placeholder: "ghp_...",
+    value: tokenInput,
+    onChange: e => setTokenInput(e.target.value),
+    style: {
+      flex: 1,
+      fontSize: 12
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    style: {
+      flexShrink: 0,
+      padding: "8px 12px",
+      fontSize: 12
+    },
+    onClick: () => {
+      if (tokenInput) {
+        setGhToken(tokenInput);
+        setTokenInput("");
+        setUploadState(null);
+      }
+    }
+  }, "OK"))))), /*#__PURE__*/React.createElement("div", {
+    className: "section-title",
+    style: {
+      marginTop: 4
+    }
+  }, "Sicherheit"), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-title"
+  }, "Firebase Security Rules"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    style: {
+      padding: "5px 11px",
+      fontSize: 12
+    },
+    onClick: () => setShowRules(!showRules)
+  }, showRules ? "Verbergen" : "Anzeigen")), showRules && /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement(FirebaseRules, null)), !showRules && /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--text2)"
+    }
+  }, "Regeln absichern, damit Mitarbeiter nur ihre eigenen Daten lesen k\xF6nnen."))), toast && /*#__PURE__*/React.createElement(Toast, {
+    msg: toast.msg,
+    type: toast.type,
+    onDone: () => setToast(null)
+  }));
+}
+
+// ── MEINE DATEN TAB (für Mitarbeiter) ────────────────────────
+function MeineDaten({
+  user,
+  monat,
+  umsaetze,
+  verlauf,
+  cfg
+}) {
+  const ist = umsaetze[user.id] || 0;
+  const b = berechne(user, ist, cfg);
+  const monate = letzteMonatek(6);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ma-avatar",
+    style: {
+      width: 52,
+      height: 52,
+      fontSize: 18
+    }
+  }, user.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 700
+    }
+  }, user.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--text2)"
+    }
+  }, user.standort, " \xB7 ", user.h, "h/Woche"))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Umsatz IST"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      color: ist > 0 ? "var(--accent)" : "var(--text2)"
+    }
+  }, ist > 0 ? eur(ist) : "—")), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Ziel"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val"
+  }, eur(b.ziel))), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Provision"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      color: b.prov > 0 ? "var(--gold)" : "var(--text2)"
+    }
+  }, b.prov > 0 ? eur(b.prov) : "—")), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, "Auslastung"), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-val",
+    style: {
+      color: auslColor(b.auslPct)
+    }
+  }, ist > 0 ? pct(b.auslPct) : "—"))), ist > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body",
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--text2)"
+    }
+  }, "Differenz zum Ziel"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--mono)",
+      fontWeight: 600,
+      color: b.diff >= 0 ? "var(--accent)" : "var(--red)"
+    }
+  }, b.diff >= 0 ? "+" : "", eur(b.diff))), b.lkq && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--text2)"
+    }
+  }, "Lohnkostenquote"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--mono)",
+      fontWeight: 600,
+      color: lkqColor(b.lkq, cfg.lkqZiel)
+    }
+  }, pct(b.lkq))))), /*#__PURE__*/React.createElement("div", {
+    className: "section-title",
+    style: {
+      marginTop: 16
+    }
+  }, "Verlauf"), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-chart"
+  }, monate.map(mk => {
+    const val = verlauf?.[user.id]?.[mk] || 0;
+    const ziel = b.ziel;
+    const maxV = Math.max(...monate.map(k => verlauf?.[user.id]?.[k] || 0), ziel * 1.1, 1);
+    return /*#__PURE__*/React.createElement("div", {
+      key: mk,
+      className: "bar-row"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bar-name",
+      style: {
+        width: 50,
+        fontSize: 11
+      }
+    }, mk.split("_")[1], "/", mk.split("_")[0].slice(2)), /*#__PURE__*/React.createElement("div", {
+      className: "bar-track",
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bar-fill",
+      style: {
+        width: `${Math.round(val / maxV * 100)}%`,
+        background: val >= ziel ? "var(--accent)" : val > 0 ? "var(--orange)" : "transparent"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: `${Math.round(ziel / maxV * 100)}%`,
+        width: 1,
+        background: "rgba(255,255,255,0.15)"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "bar-val"
+    }, val > 0 ? eur(val) : "—"));
+  })))), (() => {
+    const kollegen = MITARBEITER.filter(m => m.id !== user.id && m.standort === user.standort && m.geb).map(m => ({
+      ...m,
+      days: daysUntilBday(m.geb)
+    })).sort((a, b) => a.days - b.days);
+    if (!kollegen.length) return null;
+    const bald = kollegen.filter(m => m.days <= 30);
+    const rest = kollegen.filter(m => m.days > 30);
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "section-title",
+      style: {
+        marginTop: 16
+      }
+    }, "\uD83C\uDF82 Geburtstage \u2013 ", user.standort), /*#__PURE__*/React.createElement("div", {
+      className: "card"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-body",
+      style: {
+        padding: "8px 14px"
+      }
+    }, [...bald, ...rest].map(m => {
+      const isToday = m.days === 0;
+      const isSoon = m.days <= 7;
+      return /*#__PURE__*/React.createElement("div", {
+        key: m.id,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "9px 0",
+          borderBottom: "1px solid var(--border)"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "ma-avatar",
+        style: {
+          width: 34,
+          height: 34,
+          fontSize: 12,
+          background: isToday ? "rgba(245,200,66,0.2)" : "var(--bg3)",
+          borderColor: isToday ? "var(--gold)" : "var(--border)"
+        }
+      }, m.name.split(" ").map(w => w[0]).slice(0, 2).join("")), /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1,
+          minWidth: 0
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 13,
+          fontWeight: 600
+        }
+      }, m.name.split(" ")[0]), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: "var(--text2)"
+        }
+      }, m.geb, " \xB7 ", alter(m.geb) + (isToday ? 0 : 0), " Jahre")), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: "var(--mono)",
+          fontSize: 12,
+          fontWeight: 700,
+          color: isToday ? "var(--gold)" : isSoon ? "var(--accent)" : "var(--text2)"
+        }
+      }, isToday ? "🎉 Heute!" : m.days === 1 ? "Morgen" : `${m.days}d`));
+    }))));
+  })());
+}
+
+// ══════════════════════════════════════════════════════════════
+//  HAUPT-APP
+// ══════════════════════════════════════════════════════════════
+function App() {
+  const [user, setUser] = useState(null);
+  const [tab, setTab] = useState("dashboard");
+  const [monat, setMonat] = useState(monatKey());
+  const [umsaetze, setUmsaetze] = useState({});
+  const [verlauf, setVerlauf] = useState({});
+  const [cfg, setCfg] = useState(DEFAULT_CFG);
+  const [maSettings, setMaSettings] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showMassen, setShowMassen] = useState(false);
+  const isAdmin = user?.rolle === "admin";
+
+  // Styles injizieren
+  useEffect(() => {
+    const el = document.createElement("style");
+    el.textContent = STYLES;
+    document.head.appendChild(el);
+    return () => el.remove();
+  }, []);
+
+  // Daten laden wenn Monat wechselt
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
+    Promise.all([fbRead(`umsaetze/${monat}`), fbRead("config"), fbRead("umsaetze"), fbRead("maSettings")]).then(([u, c, alle, ms]) => {
+      setUmsaetze(u || {});
+      if (c) setCfg({
+        ...DEFAULT_CFG,
+        ...c
+      });
+      if (ms) setMaSettings(ms);
+      if (alle) {
+        const v = {};
+        Object.entries(alle).forEach(([mk, maData]) => {
+          if (!maData) return;
+          Object.entries(maData).forEach(([maId, val]) => {
+            if (!v[maId]) v[maId] = {};
+            v[maId][mk] = val;
+          });
+        });
+        setVerlauf(v);
+      }
+      setLoading(false);
+    });
+  }, [monat, user]);
+  const handleLogin = ma => {
+    setUser(ma);
+    setTab(ma.rolle === "admin" ? "dashboard" : "meine");
+  };
+  const handleLogout = () => {
+    setUser(null);
+    setTab("dashboard");
+  };
+  if (!user) return /*#__PURE__*/React.createElement(LoginScreen, {
+    onLogin: handleLogin
+  });
+  const monate = letzteMonatek(6);
+  const adminTabs = [{
+    id: "dashboard",
+    label: "Übersicht"
+  }, {
+    id: "mitarbeiter",
+    label: "Mitarbeiter"
+  }, {
+    id: "ranking",
+    label: "Ranking"
+  }, {
+    id: "einstellungen",
+    label: "Einstellungen"
+  }];
+  const maTabs = [{
+    id: "meine",
+    label: "Meine Daten"
+  }];
+  const tabs = isAdmin ? adminTabs : maTabs;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "app-shell"
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "app-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "header-logo"
+  }, "GR Nord"), /*#__PURE__*/React.createElement("div", {
+    className: "header-user"
+  }, /*#__PURE__*/React.createElement("span", null, user.name.split(" ")[0]), /*#__PURE__*/React.createElement("button", {
+    className: "logout-btn",
+    onClick: handleLogout
+  }, "Abmelden"))), /*#__PURE__*/React.createElement("nav", {
+    className: "nav-tabs"
+  }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    className: `nav-tab ${tab === t.id ? "active" : ""}`,
+    onClick: () => setTab(t.id)
+  }, t.label))), /*#__PURE__*/React.createElement("main", {
+    className: "content"
+  }, isAdmin && /*#__PURE__*/React.createElement("div", {
+    className: "monat-tabs"
+  }, monate.map(mk => /*#__PURE__*/React.createElement("button", {
+    key: mk,
+    className: `monat-tab ${monat === mk ? "active" : ""}`,
+    onClick: () => setMonat(mk)
+  }, monatLabel(mk)))), loading && /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "empty-icon"
+  }, "\u23F3"), /*#__PURE__*/React.createElement("div", null, "Lade Daten\u2026")), !loading && tab === "dashboard" && isAdmin && /*#__PURE__*/React.createElement(AdminDashboard, {
+    monat: monat,
+    umsaetze: umsaetze,
+    cfg: cfg,
+    onMassenerfassung: () => setShowMassen(true),
+    onExportCSV: () => exportCSV(monat, umsaetze, cfg),
+    onExportPDF: () => exportPDF(monat, umsaetze, cfg)
+  }), !loading && tab === "mitarbeiter" && /*#__PURE__*/React.createElement(MitarbeiterTab, {
+    monat: monat,
+    umsaetze: umsaetze,
+    verlauf: verlauf,
+    cfg: cfg,
+    isAdmin: isAdmin,
+    currentUser: user,
+    maSettings: maSettings,
+    onSaveSettings: (maId, settings) => setMaSettings(prev => ({
+      ...prev,
+      [maId]: {
+        ...(prev[maId] || {}),
+        ...settings
+      }
+    }))
+  }), !loading && tab === "ranking" && isAdmin && /*#__PURE__*/React.createElement(RankingTab, {
+    monat: monat,
+    umsaetze: umsaetze,
+    cfg: cfg
+  }), !loading && tab === "einstellungen" && isAdmin && /*#__PURE__*/React.createElement(EinstellungenTab, {
+    cfg: cfg,
+    onSaveCfg: setCfg,
+    monat: monat,
+    umsaetze: umsaetze
+  }), !loading && tab === "meine" && /*#__PURE__*/React.createElement(MeineDaten, {
+    user: user,
+    monat: monat,
+    umsaetze: umsaetze,
+    verlauf: verlauf,
+    cfg: cfg
+  }), showMassen && /*#__PURE__*/React.createElement(MassenerfassungModal, {
+    monat: monat,
+    umsaetze: umsaetze,
+    cfg: cfg,
+    onClose: () => setShowMassen(false),
+    onSave: updates => setUmsaetze(prev => ({
+      ...prev,
+      ...updates
+    }))
+  })));
+}
+const _c = document.getElementById('root');
+const _r = ReactDOM.createRoot(_c);
+_r.render(React.createElement(App));
+  </script>
+</body>
+</html>
